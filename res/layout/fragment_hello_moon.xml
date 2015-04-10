@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:contentDescription="@string/hellomoon_description"
+        android:scaleType="centerInside"
+        android:src="@drawable/armstrong_on_moon" />
+
+    <!-- TableLayout使用起来和LinearLayout差不多。可使用TableRow，而非嵌套使用的LinearLayout，来布置组件。
+        TableRow子组件的行为方式类似于表里的单元格。联合使用TableLayout与TableRow，可更容易地布置形成排列整齐的视图。
+        TableRow组件无需声明高度和宽度的属性定义。它使用的是TableLayout的高度和宽度属性定义及其所有其他属性定义。-->
+    <TableRow
+        android:layout_weight="0"
+        android:gravity="center|bottom" >
+
+        <Button
+            android:id="@+id/hellomoon_playButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hellomoon_play" />
+
+        <Button
+            android:id="@+id/hellomoon_stopButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hellomoon_stop" />
+    </TableRow>
+
+</TableLayout>

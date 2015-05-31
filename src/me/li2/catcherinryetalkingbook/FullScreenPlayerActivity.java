@@ -1,20 +1,18 @@
-package me.li2.android.hellomoon;
+package me.li2.catcherinryetalkingbook;
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-public class HelloMoonFragment extends Fragment {
-    private final static String TAG = "HelloMoonFragment";
+public class FullScreenPlayerActivity extends ActionBarActivity {
+    private final static String TAG = "FullScreenPlayerActivity";
     private final static int PROGRESS_UPDATE_INTERVAL = 200;
     
     private Handler mHandler = new Handler();
@@ -25,22 +23,20 @@ public class HelloMoonFragment extends Fragment {
     private int mAudioFileResId;
     
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        mAudioFileResId = R.raw.yaoyuedui_haiyou;
+        setContentView(R.layout.activity_full_player);
         
         // Play if isn't playing or paused.
         // 通过Uri，而不是Resource Id来构建MediaPlayer
-        Uri fileUri = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + mAudioFileResId);
-        mPlayer.play(getActivity(), fileUri);
+        mAudioFileResId = R.raw.yaoyuedui_haiou;
+        Uri fileUri = Uri.parse("android.resource://" + getPackageName() + "/" + mAudioFileResId);
+        mPlayer.play(this, fileUri);
+//        String httpPath = "http://pan.baidu.com/s/1gd8enab";
+//        mPlayer.play(getActivity(), httpPath);
         mPlayer.setLooping(true);
-    }
-    
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_hello_moon, parent);
-        mPlayButton = (Button) v.findViewById(R.id.hellomoon_playButton);
+        
+        mPlayButton = (Button) findViewById(R.id.catcher_playButton);
         mPlayButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +53,7 @@ public class HelloMoonFragment extends Fragment {
             }
         });
         
-        mStopButton = (Button) v.findViewById(R.id.hellomoon_stopButton);
+        mStopButton = (Button) findViewById(R.id.catcher_stopButton);
         mStopButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +61,7 @@ public class HelloMoonFragment extends Fragment {
             }
         });
         
-        mSeekBar = (SeekBar) v.findViewById(R.id.seekbar);
+        mSeekBar = (SeekBar) findViewById(R.id.catcher_seekbar);
         mSeekBar.setMax(mPlayer.getDuration());
         mSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
@@ -78,17 +74,18 @@ public class HelloMoonFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
         });
         scheduleSeekbarUpdate();
-        return v;
+
+        
     }
-    
+
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         super.onDestroy();
         mPlayer.stop();
     }
     
     private void updateProgress() {
-        getActivity().runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mSeekBar.setProgress(mPlayer.getCurrentPosition());

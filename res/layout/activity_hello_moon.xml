@@ -1,6 +1,0 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/helloMoonFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:name="me.li2.android.hellomoon.HelloMoonFragment">
-</fragment>

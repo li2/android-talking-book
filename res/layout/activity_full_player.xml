@@ -7,12 +7,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:contentDescription="@string/hellomoon_description"
+        android:contentDescription="@string/catcher_description"
         android:scaleType="centerInside"
         android:src="@drawable/armstrong_on_moon" />
 
     <SeekBar
-        android:id="@+id/seekbar"
+        android:id="@+id/catcher_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     
@@ -24,16 +24,16 @@
         android:gravity="center|bottom" >
 
         <Button
-            android:id="@+id/hellomoon_playButton"
+            android:id="@+id/catcher_playButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hellomoon_play" />
+            android:text="@string/catcher_play" />
 
         <Button
-            android:id="@+id/hellomoon_stopButton"
+            android:id="@+id/catcher_stopButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hellomoon_stop" />
+            android:text="@string/catcher_stop" />
     </TableRow>
 
 </TableLayout>

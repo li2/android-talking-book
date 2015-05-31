@@ -1,4 +1,6 @@
-package me.li2.android.hellomoon;
+package me.li2.catcherinryetalkingbook;
+
+import java.io.IOException;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -7,6 +9,24 @@ import android.net.Uri;
 public class AudioPlayer {
     private final static String TAG = "AudioPlayer";
     private MediaPlayer mPlayer;
+    
+    public void play(Context c, String httpPath) {
+        stop();
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(httpPath);
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
     public void play(Context c, Uri fileUri) {
         stop();

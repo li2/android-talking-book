@@ -3,6 +3,9 @@ package me.li2.catcherinryetalkingbook;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
@@ -75,7 +78,15 @@ public class FullScreenPlayerActivity extends ActionBarActivity {
         });
         scheduleSeekbarUpdate();
 
-        
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment oldLrcFragment = fm.findFragmentById(R.id.catcher_lrcFragmentContainer);
+        Fragment newLrcFragment = new LrcFragment();
+        if (oldLrcFragment != null) {
+            ft.remove(oldLrcFragment);
+        }
+        ft.add(R.id.catcher_lrcFragmentContainer, newLrcFragment);
+        ft.commit();
     }
 
     @Override

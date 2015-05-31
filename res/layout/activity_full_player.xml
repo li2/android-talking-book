@@ -3,14 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ImageView
+    <FrameLayout 
+        android:id="@+id/catcher_lrcFragmentContainer" 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:contentDescription="@string/catcher_description"
-        android:scaleType="centerInside"
-        android:src="@drawable/armstrong_on_moon" />
-
+        android:layout_weight="1"/>
+    
     <SeekBar
         android:id="@+id/catcher_seekbar"
         android:layout_width="match_parent"

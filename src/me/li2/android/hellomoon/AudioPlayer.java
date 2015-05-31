@@ -2,11 +2,31 @@ package me.li2.android.hellomoon;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
+import android.net.Uri;
 
 public class AudioPlayer {
-
+    private final static String TAG = "AudioPlayer";
     private MediaPlayer mPlayer;
+    
+    public void play(Context c, Uri fileUri) {
+        stop();
+        
+        // Create a MediaPlayer instance.
+        mPlayer = MediaPlayer.create(c, fileUri);
+        mPlayer.start();
+    }
+    
+    public void start() {
+        if (mPlayer != null) {
+            mPlayer.start();
+        }
+    }
+    
+    public void pause() {
+        if (mPlayer != null) {
+            mPlayer.pause();
+        }
+    }
     
     public void stop() {
         if (mPlayer != null) {
@@ -14,18 +34,37 @@ public class AudioPlayer {
             mPlayer = null;
         }
     }
+
+    public boolean isPlaying() {
+        if (mPlayer != null) {
+            return mPlayer.isPlaying();
+        }
+        return false;
+    }
     
-    public void play(Context c) {
-        stop();
-        
-        mPlayer = MediaPlayer.create(c, R.raw.one_small_step);
-        mPlayer.start();
-        
-        mPlayer.setOnCompletionListener(new OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                stop();
-            }
-        });
+    public int getDuration() {
+        if (mPlayer != null) {
+            return mPlayer.getDuration();
+        }
+        return 0;
+    }
+    
+    public int getCurrentPosition() {
+        if (mPlayer != null) {
+            return mPlayer.getCurrentPosition();
+        }
+        return 0;
+    }
+    
+    public void seekToPosition(int msec) {
+        if (mPlayer != null){
+            mPlayer.seekTo(msec);
+        }
+    }
+    
+    public void setLooping(boolean looping) {
+        if (mPlayer != null) {
+            mPlayer.setLooping(looping);
+        }
     }
 }

@@ -11,6 +11,11 @@
         android:scaleType="centerInside"
         android:src="@drawable/armstrong_on_moon" />
 
+    <SeekBar
+        android:id="@+id/seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
     <!-- TableLayout使用起来和LinearLayout差不多。可使用TableRow，而非嵌套使用的LinearLayout，来布置组件。
         TableRow子组件的行为方式类似于表里的单元格。联合使用TableLayout与TableRow，可更容易地布置形成排列整齐的视图。
         TableRow组件无需声明高度和宽度的属性定义。它使用的是TableLayout的高度和宽度属性定义及其所有其他属性定义。-->

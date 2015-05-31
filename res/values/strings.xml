@@ -3,6 +3,7 @@
 
     <string name="app_name">HelloMoon</string>
     <string name="hellomoon_play">Play</string>
+    <string name="hellomoon_pause">Pause</string>
     <string name="hellomoon_stop">Stop</string>
     <string name="hellomoon_description">Neil Armstrong stepping onto the moon</string>
 

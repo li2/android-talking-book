@@ -14,7 +14,9 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-public class FullScreenPlayerActivity extends ActionBarActivity {
+public class FullScreenPlayerActivity extends ActionBarActivity
+    implements LrcFragment.Callbacks {
+    
     private final static String TAG = "FullScreenPlayerActivity";
     private final static int PROGRESS_UPDATE_INTERVAL = 200;
     
@@ -113,5 +115,10 @@ public class FullScreenPlayerActivity extends ActionBarActivity {
                 mHandler.postDelayed(this, PROGRESS_UPDATE_INTERVAL);
             }
         }, PROGRESS_UPDATE_INTERVAL);
+    }
+
+    @Override
+    public void onLrcItemSelected(int seconds) {
+        mPlayer.seekToPosition(seconds*1000);
     }
 }

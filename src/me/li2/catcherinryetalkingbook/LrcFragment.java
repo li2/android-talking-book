@@ -3,6 +3,7 @@ package me.li2.catcherinryetalkingbook;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -13,6 +14,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class LrcFragment extends ListFragment {
+    
+    private Callbacks mCallbacks;
+    
+    public interface Callbacks {
+        void onLrcItemSelected(int seconds);
+    }
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,23 @@ public class LrcFragment extends ListFragment {
         listView.setDivider(null);
         listView.setVerticalScrollBarEnabled(false);
         return view;
+    }
+    
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallbacks = (Callbacks)activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        mCallbacks.onLrcItemSelected(position*20*1000);
     }
 
     private class LrcAdapter extends ArrayAdapter<String> {

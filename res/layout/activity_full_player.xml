@@ -7,7 +7,14 @@
         android:id="@+id/catcher_lrcFragmentContainer" 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1" >
+        
+        <com.douzi.android.lrc.LrcView
+            android:id="@+id/catcher_lrcView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </FrameLayout>
     
     <SeekBar
         android:id="@+id/catcher_seekbar"

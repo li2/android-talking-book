@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <color name="white">#FFFFFF</color><!--白色 -->
+    <color name="black">#000000</color><!--黑色 -->
+    <color name="darkgray">#A9A9A9</color><!--暗灰色 -->
+    <color name="lightgray">#D3D3D3</color><!--亮灰色 -->
+    <color name="mediumslateblue">#7B68EE</color><!--中暗蓝色-->
+	<color name="lightslategray">#778899</color><!--亮蓝灰 -->
+	<color name="slategray">#708090</color><!--灰石色 -->
+	<color name="blue">#0000FF</color><!--蓝色 -->
+     
+</resources>

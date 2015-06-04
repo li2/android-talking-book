@@ -14,6 +14,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class LrcFragment extends ListFragment {
+    private final static String TAG = "LrcFragment";
+    private final static int LRC_FONT_SIZE = 16;
+    
+    private static int sSelectedLine;
     
     private Callbacks mCallbacks;
     
@@ -25,19 +29,19 @@ public class LrcFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ArrayList<String> lrcList = new ArrayList<String>();
-        lrcList.add("天空是什么颜色 在云的那端 或许是生命的港湾天空是什么颜色");
+        lrcList.add("天空是什么颜色 在云的那端 或许是生命的港湾");
         lrcList.add("风中是谁在唱着 动人的歌谣 展翅翱翔");
         lrcList.add("让我们飞 飞过高山 飞过海洋直到那梦的彼岸");
         lrcList.add("让我们飞 穿越丛林 越过荆棘密布的地方");
 
-        lrcList.add("天空是什么颜色 在云的那端 或许是生命的港湾天空是什么颜色");
+        lrcList.add("天空是什么颜色 在云的那端 或许是生命的港湾");
         lrcList.add("风中是谁在唱着 动人的歌谣 展翅翱翔");
         lrcList.add("让我们飞 飞过高山 飞过海洋直到那梦的彼岸");
         lrcList.add("让我们飞 穿越丛林 越过荆棘密布的地方");
         
         lrcList.add("年轻的心 不会停止 就像海鸥一样在风中歌唱");
         lrcList.add("年轻的心 充满力量 想着光明的地方");
-        
+
         setListAdapter(new LrcAdapter(lrcList));
     }
     
@@ -64,7 +68,9 @@ public class LrcFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        mCallbacks.onLrcItemSelected(position*20*1000);
+        sSelectedLine = position;
+        ((LrcAdapter)l.getAdapter()).notifyDataSetChanged();
+        mCallbacks.onLrcItemSelected(position);
     }
 
     private class LrcAdapter extends ArrayAdapter<String> {
@@ -77,7 +83,12 @@ public class LrcFragment extends ListFragment {
             View view = super.getView(position, convertView, parent);
             TextView textView = (TextView) view;
             textView.setText(getItem(position));
-            textView.setTextSize(16);
+            textView.setTextSize(LRC_FONT_SIZE);
+            if (sSelectedLine == position) {
+                textView.setBackgroundColor(getResources().getColor(R.color.lightgray));
+            } else {
+                textView.setBackgroundColor(getResources().getColor(android.R.color.white));
+            }
             return view;
         }
     }

@@ -1,5 +1,9 @@
 package me.li2.catcherinryetalkingbook;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.List;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +18,11 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+import com.douzi.android.lrc.DefaultLrcBuilder;
+import com.douzi.android.lrc.ILrcBuilder;
+import com.douzi.android.lrc.LrcRow;
+import com.douzi.android.lrc.LrcView;
+
 public class FullScreenPlayerActivity extends ActionBarActivity
     implements LrcFragment.Callbacks {
     
@@ -26,6 +35,7 @@ public class FullScreenPlayerActivity extends ActionBarActivity
     private Button mStopButton;
     private SeekBar mSeekBar;
     private int mAudioFileResId;
+    LrcView mLrcView;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +97,14 @@ public class FullScreenPlayerActivity extends ActionBarActivity
         if (oldLrcFragment != null) {
             ft.remove(oldLrcFragment);
         }
-        ft.add(R.id.catcher_lrcFragmentContainer, newLrcFragment);
-        ft.commit();
+//        ft.add(R.id.catcher_lrcFragmentContainer, newLrcFragment);
+//        ft.commit();
+        
+        mLrcView = (LrcView) findViewById(R.id.catcher_lrcView);
+        String lrc = getLrcFromAssets("test.lrc");
+        ILrcBuilder builder = new DefaultLrcBuilder();
+        List<LrcRow> rows = builder.getLrcRows(lrc);
+        mLrcView.setLrc(rows);
     }
 
     @Override
@@ -119,6 +135,26 @@ public class FullScreenPlayerActivity extends ActionBarActivity
 
     @Override
     public void onLrcItemSelected(int seconds) {
-        mPlayer.seekToPosition(seconds*1000);
+        Log.d(TAG, "onLrcItemSelected current position " + seconds + ":" + mPlayer.getCurrentPosition());
+//        mPlayer.seekToPosition(seconds*1000);
     }
+    
+    public String getLrcFromAssets(String fileName){
+        try {
+            InputStreamReader inputReader = new InputStreamReader( getResources().getAssets().open(fileName) );
+            BufferedReader bufReader = new BufferedReader(inputReader);
+            String line="";
+            String Result="";
+            while((line = bufReader.readLine()) != null){
+                if(line.trim().equals(""))
+                    continue;
+                Result += line + "\r\n";
+            }
+            return Result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 }

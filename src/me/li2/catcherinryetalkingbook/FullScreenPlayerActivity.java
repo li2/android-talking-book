@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.text.style.TtsSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,16 +39,16 @@ public class FullScreenPlayerActivity extends ActionBarActivity
     
     private Handler mHandler = new Handler();
     private AudioPlayer mPlayer = new AudioPlayer();
+    private LrcFragment mLrcFragment;
     private Button mPlayButton;
     private Button mStopButton;
     private SeekBar mSeekBar;
     private int mAudioFileResId;
-
+    
     LrcView mLrcView;
     private int mPalyTimerDuration = 1000;
     private Timer mTimer;
     private TimerTask mTask;
-    
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +57,12 @@ public class FullScreenPlayerActivity extends ActionBarActivity
         
         // Play if isn't playing or paused.
         // 通过Uri，而不是Resource Id来构建MediaPlayer
-        mAudioFileResId = R.raw.yaoyuedui_haiou;
+        mAudioFileResId = R.raw.m2;
         Uri fileUri = Uri.parse("android.resource://" + getPackageName() + "/" + mAudioFileResId);
-//        mPlayer.play(this, fileUri);
+        mPlayer.play(this, fileUri);
 //        String httpPath = "http://pan.baidu.com/s/1gd8enab";
-//        mPlayer.play(getActivity(), httpPath);
-//        mPlayer.setLooping(true);
+//        mPlayer.play(this, httpPath);
+        mPlayer.setLooping(true);
         
         mPlayButton = (Button) findViewById(R.id.catcher_playButton);
         mPlayButton.setOnClickListener(new OnClickListener() {
@@ -102,16 +103,20 @@ public class FullScreenPlayerActivity extends ActionBarActivity
         });
         scheduleSeekbarUpdate();
 
+        //*
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         Fragment oldLrcFragment = fm.findFragmentById(R.id.catcher_lrcFragmentContainer);
-        Fragment newLrcFragment = new LrcFragment();
+        Fragment newLrcFragment = LrcFragment.newInstance("test2.lrc");
+        mLrcFragment = (LrcFragment)newLrcFragment;
         if (oldLrcFragment != null) {
             ft.remove(oldLrcFragment);
         }
-//        ft.add(R.id.catcher_lrcFragmentContainer, newLrcFragment);
-//        ft.commit();
+        ft.add(R.id.catcher_lrcFragmentContainer, newLrcFragment);
+        ft.commit();
+        //*/
         
+        /*
         mLrcView = (LrcView) findViewById(R.id.catcher_lrcView);
         String lrc = getLrcFromAssets("test.lrc");
         ILrcBuilder builder = new DefaultLrcBuilder();
@@ -121,14 +126,14 @@ public class FullScreenPlayerActivity extends ActionBarActivity
         beginLrcPlay();
         
         mLrcView.setListener(new LrcViewListener() {
-
             public void onLrcSeeked(int newPosition, LrcRow row) {
                 if (mPlayer2 != null) {
-                    Log.d(TAG, "onLrcSeeked:" + row.time);
-//                    mPlayer2.seekTo((int)row.time);
+                    Log.d(TAG, "onLrcSeeked new position:" + newPosition);
+                    mPlayer2.seekTo((int)row.time);
                 }
             }
         });
+        */
     }
 
     @Override
@@ -158,9 +163,19 @@ public class FullScreenPlayerActivity extends ActionBarActivity
     }
 
     @Override
-    public void onLrcItemSelected(int seconds) {
-        Log.d(TAG, "onLrcItemSelected current position " + seconds + ":" + mPlayer.getCurrentPosition());
-//        mPlayer.seekToPosition(seconds*1000);
+    public void onLrcItemSelected(int lrcRow) {
+        int milliseconds = mPlayer.getCurrentPosition();
+        milliseconds -= 567; // since human click the item has a little delay, maybe 567ms.
+        milliseconds = (milliseconds > 0) ? milliseconds : 0;
+        int minutesPart = (milliseconds/1000)/60;
+        int secondsPart = ((int)(milliseconds/1000))%60;
+        int msPart = milliseconds - (minutesPart * 60 + secondsPart) * 1000;
+        msPart = msPart > 99 ? 99 : msPart;
+        String timestampStr = String.format("[%02d:%02d.%02d]", minutesPart, secondsPart, msPart);
+        Log.d(TAG, "onLrcItemSelected: Lrc Row " + lrcRow + ":" + timestampStr);
+        
+        // 
+        mLrcFragment.setTimestampStr(timestampStr);
     }
     
     public String getLrcFromAssets(String fileName){

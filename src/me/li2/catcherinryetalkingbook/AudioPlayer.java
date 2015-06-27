@@ -69,6 +69,7 @@ public class AudioPlayer {
         return 0;
     }
     
+    // Gets the current playback position. @return the current position in milliseconds.
     public int getCurrentPosition() {
         if (mPlayer != null) {
             return mPlayer.getCurrentPosition();

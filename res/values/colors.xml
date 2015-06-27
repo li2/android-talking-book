@@ -9,5 +9,6 @@
 	<color name="lightslategray">#778899</color><!--亮蓝灰 -->
 	<color name="slategray">#708090</color><!--灰石色 -->
 	<color name="blue">#0000FF</color><!--蓝色 -->
+	<color name="smokeWhite">#EBEBEB</color><!-- 烟白色 -->
      
 </resources>

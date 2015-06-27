@@ -1,9 +1,15 @@
 package me.li2.catcherinryetalkingbook;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +26,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.douzi.android.lrc.DefaultLrcBuilder;
 import com.douzi.android.lrc.ILrcBuilder;
+import com.douzi.android.lrc.ILrcView.LrcViewListener;
 import com.douzi.android.lrc.LrcRow;
 import com.douzi.android.lrc.LrcView;
 
@@ -35,7 +42,12 @@ public class FullScreenPlayerActivity extends ActionBarActivity
     private Button mStopButton;
     private SeekBar mSeekBar;
     private int mAudioFileResId;
+
     LrcView mLrcView;
+    private int mPalyTimerDuration = 1000;
+    private Timer mTimer;
+    private TimerTask mTask;
+    
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +58,10 @@ public class FullScreenPlayerActivity extends ActionBarActivity
         // 通过Uri，而不是Resource Id来构建MediaPlayer
         mAudioFileResId = R.raw.yaoyuedui_haiou;
         Uri fileUri = Uri.parse("android.resource://" + getPackageName() + "/" + mAudioFileResId);
-        mPlayer.play(this, fileUri);
+//        mPlayer.play(this, fileUri);
 //        String httpPath = "http://pan.baidu.com/s/1gd8enab";
 //        mPlayer.play(getActivity(), httpPath);
-        mPlayer.setLooping(true);
+//        mPlayer.setLooping(true);
         
         mPlayButton = (Button) findViewById(R.id.catcher_playButton);
         mPlayButton.setOnClickListener(new OnClickListener() {
@@ -105,6 +117,18 @@ public class FullScreenPlayerActivity extends ActionBarActivity
         ILrcBuilder builder = new DefaultLrcBuilder();
         List<LrcRow> rows = builder.getLrcRows(lrc);
         mLrcView.setLrc(rows);
+        
+        beginLrcPlay();
+        
+        mLrcView.setListener(new LrcViewListener() {
+
+            public void onLrcSeeked(int newPosition, LrcRow row) {
+                if (mPlayer2 != null) {
+                    Log.d(TAG, "onLrcSeeked:" + row.time);
+//                    mPlayer2.seekTo((int)row.time);
+                }
+            }
+        });
     }
 
     @Override
@@ -157,4 +181,66 @@ public class FullScreenPlayerActivity extends ActionBarActivity
         return "";
     }
 
+    MediaPlayer mPlayer2;
+    public void beginLrcPlay(){
+
+        mPlayer2 = new MediaPlayer();
+        try {
+            mPlayer2.setDataSource(getAssets().openFd("m.mp3").getFileDescriptor());
+            mPlayer2.setOnPreparedListener(new OnPreparedListener() {
+
+                public void onPrepared(MediaPlayer mp) {
+                    Log.d(TAG, "onPrepared");
+                    mp.start();
+                    if(mTimer == null){
+                        mTimer = new Timer();
+                        mTask = new LrcTask();
+                        mTimer.scheduleAtFixedRate(mTask, 0, mPalyTimerDuration);
+                    }
+                }
+            });
+            mPlayer2.setOnCompletionListener(new OnCompletionListener() {
+
+                public void onCompletion(MediaPlayer mp) {
+                    stopLrcPlay();
+                }
+            });
+            mPlayer2.prepare();
+            mPlayer2.start();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void stopLrcPlay(){
+        if(mTimer != null){
+            mTimer.cancel();
+            mTimer = null;
+        }
+    }
+
+    class LrcTask extends TimerTask{
+
+        long beginTime = -1;
+
+        @Override
+        public void run() {
+            if(beginTime == -1) {
+                beginTime = System.currentTimeMillis();
+            }
+
+            final long timePassed = mPlayer2.getCurrentPosition();
+            runOnUiThread(new Runnable() {
+
+                public void run() {
+                    mLrcView.seekLrcToTime(timePassed);
+                }
+            });
+
+        }
+    };
 }

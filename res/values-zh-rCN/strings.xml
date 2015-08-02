@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">21 Talking Book</string>
+    <string name="app_name">21有声书</string>
     <string name="catcher_play">Play</string>
     <string name="catcher_pause">Pause</string>
     <string name="catcher_stop">Stop</string>

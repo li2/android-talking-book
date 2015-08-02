@@ -1,11 +1,16 @@
-package me.li2.catcherinryetalkingbook;
+package me.li2.talkingbook21;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -24,6 +29,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+
 
 import com.douzi.android.lrc.DefaultLrcBuilder;
 import com.douzi.android.lrc.ILrcBuilder;
@@ -54,6 +60,31 @@ public class FullScreenPlayerActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_player);
+        
+        // Load Timing-Json file
+        String localJsonFileName = "chapter1.json.out.json";
+        String stringFromJsonFile = FileOperateUtil.loadJSONFromAsset(getApplicationContext(), localJsonFileName);
+        JSONObject jsonObj = null;
+        JSONArray jsonArray = null;
+        try {
+			jsonObj = new JSONObject(stringFromJsonFile);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        if (jsonObj != null) {
+        	Log.d(TAG, "parse json");
+        	try {
+				jsonArray = jsonObj.getJSONArray("words");
+				for (int index = 0; index < jsonArray.length(); index++) {
+					JSONArray obj = jsonArray.getJSONArray(index);
+					Log.d(TAG, String.format("%-5.3f  %s", (double)obj.get(1), (String)obj.get(0)));
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+        }
         
         // Play if isn't playing or paused.
         // 通过Uri，而不是Resource Id来构建MediaPlayer

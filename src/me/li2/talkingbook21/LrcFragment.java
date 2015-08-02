@@ -1,4 +1,4 @@
-package me.li2.catcherinryetalkingbook;
+package me.li2.talkingbook21;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,10 +27,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import me.li2.talkingbook21.R;
 
 public class LrcFragment extends ListFragment {
     
-    public static final String EXTRA_LRC_FILE_NAME = "me.li2.catcherinryetalkingbook.LrcFragment.lrcFileName";
+    public static final String EXTRA_LRC_FILE_NAME = "me.li2.talkingbook21.LrcFragment.lrcFileName";
     
     private final static String TAG = "LrcFragment";
     private final static int WRITE_FILE_TIME_INTERVAL = 1000; // 1s

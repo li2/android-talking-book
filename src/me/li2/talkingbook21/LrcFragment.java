@@ -1,25 +1,16 @@
 package me.li2.talkingbook21;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.ListFragment;
-import android.text.SpannableString;
-import android.text.TextUtils;
-import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,37 +18,28 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import me.li2.talkingbook21.R;
 
 public class LrcFragment extends ListFragment {
     
-    public static final String EXTRA_LRC_FILE_NAME = "me.li2.talkingbook21.LrcFragment.lrcFileName";
-    
+    public static final String EXTRA_LRC_URI = "me.li2.talkingbook21.LrcFragment.lrcUri";
+
     private final static String TAG = "LrcFragment";
-    private final static int WRITE_FILE_TIME_INTERVAL = 1000; // 1s
     private final static int LRC_FONT_SIZE = 16;
-    private final static int LRC_TIMESTAMP_LENGTH = 10; // [00:00.00]
-    // \\[ transfer [ in bracket expression as literal [
-    // \\d to indicate a digit
-    // X{n} X exactly n times
-    private final static String LRC_TIMESTAMP_REG_EXP = "\\[\\d{2}:\\d{2}.\\d{2}\\].*";
     
     private static int sSelectedRow = -1;
     private LrcAdapter mLrcAdapter;
     private ArrayList<String> mLrcArray;
-    private String mLrcPath;
-    private String mTimestampStr;
+    private ArrayList<Integer> mTimingArray;
     private Callbacks mCallbacks;
-    private Handler mHandler;
 
     public interface Callbacks {
-        void onLrcItemSelected(int lrcRow);
+        void onLrcItemSelected(int msec);
     }
     
     // Create a fragment instance.
-    public static LrcFragment newInstance(String fileName) {
+    public static LrcFragment newInstance(Uri timingJsonUri) {
         Bundle args = new Bundle();
-        args.putString(EXTRA_LRC_FILE_NAME, fileName);
+        args.putString(EXTRA_LRC_URI, timingJsonUri.toString());
         
         LrcFragment fragment = new LrcFragment();
         fragment.setArguments(args);
@@ -67,28 +49,40 @@ public class LrcFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Get lrc name from bundle.
-        String lrcFileName = getArguments().getString(EXTRA_LRC_FILE_NAME);
-        // Load lrc from external sdcard or app assets file.
-        mLrcPath = buildExtFilePathWithName(lrcFileName);
-        File lrcFile = new File(mLrcPath);
-        if (lrcFile.exists()) {
-            try {
-                mLrcArray = loadLrcFromExtFile(mLrcPath);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d(TAG, "ERROR loading lrc from ext file: ", e);
-            }
-        } else {
-            mLrcArray = loadLrcFromAssetsFile(lrcFileName);
+        // Get timing Json file uri from bundle.
+        Uri timingJsonUri = Uri.parse(getArguments().getString(EXTRA_LRC_URI));
+        String timingJsonString = FileOperateUtil.loadExtFileToString(timingJsonUri);
+        JSONObject jsonObj = null;
+        JSONArray jsonArray = null;
+        mLrcArray = new ArrayList<String>();
+        mTimingArray = new ArrayList<Integer>();
+        
+        try {
+            jsonObj = new JSONObject(timingJsonString);
+        } catch (JSONException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
         }
+               
+        if (jsonObj != null) {
+            Log.d(TAG, "parse json");
+            try {
+                jsonArray = jsonObj.getJSONArray("words");
+                for (int index = 0; index < jsonArray.length(); index++) {
+                    JSONArray obj = jsonArray.getJSONArray(index);
+                    Log.d(TAG, String.format("%-5.3f  %s", (double)obj.get(1), (String)obj.get(0)));
+                    mLrcArray.add((String)obj.get(0));
+                    double seconds = (double)obj.get(1);
+                    mTimingArray.add((int)(seconds*1000));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+          }
                 
         // Set listfragment adapter datasource.
         mLrcAdapter = new LrcAdapter(mLrcArray);
         setListAdapter(mLrcAdapter);
-
-        //
-        mHandler = new Handler();
     }
     
     @Override
@@ -118,44 +112,38 @@ public class LrcFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         sSelectedRow = position;
         mLrcAdapter.notifyDataSetChanged();
-        mCallbacks.onLrcItemSelected(position);
+        mCallbacks.onLrcItemSelected(mTimingArray.get(position));
+    }
+
+    // 
+    public void seekLrcToTime(int msec) {
+        if (mTimingArray == null || mTimingArray.size() <= 0) {
+            return;
+        }
+        sSelectedRow = findNearestTiming(msec);
+        mLrcAdapter.notifyDataSetChanged();
+//        getListView().setSmoothScrollbarEnabled(true);
+//        getListView().smoothScrollToPosition(sSelectedRow);
+        
+        if (getListView().getLastVisiblePosition() < sSelectedRow) {
+          getListView().setSelection(sSelectedRow);
+        }
     }
     
-    // Setter method, when timestamp changed, update view and save to file.
-    public void setTimestampStr(String timestampStr) {
-        mTimestampStr = timestampStr;
-        Log.d(TAG, "setTimestampStr " + mTimestampStr);
-
-        // Attach timestamp to header of selected lrc.
-        String selectedLrc = mLrcAdapter.getItem(sSelectedRow);
-        if (selectedLrc.length() >= LRC_TIMESTAMP_LENGTH && selectedLrc.matches(LRC_TIMESTAMP_REG_EXP)) {
-            // already has timestamp, modify.
-            selectedLrc = timestampStr + selectedLrc.subSequence(LRC_TIMESTAMP_LENGTH, selectedLrc.length());
-        } else {
-            // no timestamp, add.
-            selectedLrc = timestampStr + selectedLrc;
-        }
-        mLrcArray.set(sSelectedRow, selectedLrc);
-        
-        // Then notify lrc adapter that its data changed
-        mLrcAdapter.notifyDataSetChanged();
-        
-        // Lastly, write to file
-        mHandler.removeCallbacks(mWriteToFileRunnable);
-        mHandler.postDelayed(mWriteToFileRunnable, WRITE_FILE_TIME_INTERVAL);
-    }
-
-    private Runnable mWriteToFileRunnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                saveLrcToExtFile(mLrcPath, mLrcArray);
-            } catch (JSONException | IOException e) {
-                e.printStackTrace();
+    private int findNearestTiming(int msec) {
+        int nearestDiff = mTimingArray.get(0);
+        int nearestIndex = 0;
+        for (int index = 0; index < mTimingArray.size(); index++) {
+            int diff = Math.abs(mTimingArray.get(index) - msec);
+            if (diff < nearestDiff) {
+                nearestDiff = diff;
+                nearestIndex = index;
             }
         }
-    };
+        return nearestIndex;
+    }
     
+
     private class LrcAdapter extends ArrayAdapter<String> {
         public LrcAdapter(List<String> objects) {
             super(getActivity(), android.R.layout.simple_list_item_1, objects);
@@ -165,109 +153,14 @@ public class LrcFragment extends ListFragment {
             View view = super.getView(position, convertView, parent);
             TextView textView = (TextView) view;
             textView.setTextSize(LRC_FONT_SIZE);
-            
-            String item = getItem(position);
-            boolean hasTimestamp = item.matches(LRC_TIMESTAMP_REG_EXP);
-            
-            if (hasTimestamp) {
-                String part1 = item.substring(0, LRC_TIMESTAMP_LENGTH);
-                String part2 = item.substring(LRC_TIMESTAMP_LENGTH, item.length());
-                textView.setText(buildAttributedString(part1, part2));
-            } else {
-                textView.setText(item);
-            }
+            textView.setText(getItem(position));
             
             if (sSelectedRow == position) {
-                textView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
+                textView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
             } else {
-                if(hasTimestamp) {
-                    textView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
-                } else {
-                    textView.setBackgroundColor(getResources().getColor(R.color.smokeWhite));
-                }
+                textView.setBackgroundColor(getResources().getColor(R.color.smokeWhite));
             }
-            
             return view;
         }
-    }
-    
-    private CharSequence buildAttributedString(String str1, String str2) {
-        SpannableString ss1 = new SpannableString(str1);
-        ss1.setSpan(new RelativeSizeSpan(1.5f), 0, str1.length(), 0);
-        ss1.setSpan(getResources().getColor(android.R.color.holo_blue_dark), 0, str1.length(), 0);
-
-        SpannableString ss2 = new SpannableString(str2);
-        ss2.setSpan(new RelativeSizeSpan(1f), 0, str2.length(), 0);
-
-        return TextUtils.concat(ss1, ss2);
-    }
-    
-    // Read line from file, and use these lines to build an array
-    private ArrayList<String> loadLrcFromAssetsFile(String fileName){
-        try {            
-            InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName) );
-            BufferedReader bufReader = new BufferedReader(inputReader);
-            String line="";
-            ArrayList<String>result = new ArrayList<String>();
-            while((line = bufReader.readLine()) != null){
-                if(line.trim().equals("")) {
-                    continue;
-                }
-                result.add(line);
-            }
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-    private String buildExtFilePathWithName(String fileName) {
-        String extSDCardPath = getActivity().getExternalFilesDir(null).getAbsolutePath();
-        String filePath = extSDCardPath + "/" + fileName + ".txt";
-        return filePath;
-    }
-    
-    private ArrayList<String> loadLrcFromExtFile(String filePath) throws IOException, JSONException {
-        ArrayList<String> result = new ArrayList<String>();
-        BufferedReader reader = null;
-        try {
-            File file = new File(filePath);
-            reader = new BufferedReader(new FileReader(file));
-            
-            String line = null;           
-            while ((line = reader.readLine()) != null) {
-                if(line.trim().equals("")) {
-                    continue;
-                }
-                result.add(line);
-            }
-        } catch (FileNotFoundException e) {
-            // Ignore this one, it happens when starting fresh.
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
-        }
-        return result;
-    }
-    
-    private void saveLrcToExtFile(String filePath, ArrayList<String> lrcArray) throws JSONException, IOException {
-        BufferedWriter writer = null;
-        try {
-            File file = new File(filePath);
-            writer = new BufferedWriter(new FileWriter(file));
-            String result = new String();
-            for (String line : lrcArray) {
-                result += line + "\r\n";
-            }
-            writer.write(result);
-        } catch (FileNotFoundException e) {
-        } finally {
-            if (writer != null) {
-                Log.e(TAG, filePath + "not found!");
-                writer.close();
-            }
-        }
-    }    
+    } 
 }

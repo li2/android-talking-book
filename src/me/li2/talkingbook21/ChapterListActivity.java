@@ -1,7 +1,11 @@
 package me.li2.talkingbook21;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+
+import org.json.JSONException;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -23,6 +27,7 @@ public class ChapterListActivity extends FragmentActivity {
         
         if (sdcardPath != null) {
             String timingJsonFileName = "chapter1.json.out.json";
+//            String timingJsonFileName = "test2.lrc";
             String audioFileName = "chapter1.mp3";
             String folderPath = sdcardPath + "/" + "TalkingBook21/";
             String timingJsonFilePath = folderPath + timingJsonFileName;
@@ -31,6 +36,15 @@ public class ChapterListActivity extends FragmentActivity {
             mAudioUri = Uri.fromFile(new File(audioFilePath));
             Log.d(TAG, "File Path: " + mTimingJsonUri.toString() + ", " + mAudioUri);
         }
+        
+//        ArrayList<String> list1 = FileOperateUtil.loadAssetsFileToStringList(getApplicationContext(), "test2.lrc");
+//        
+//        String str1 = FileOperateUtil.loadAssetsFileToString(getApplicationContext(), "test2.lrc");
+//        
+//        ArrayList<String> list2 = FileOperateUtil.loadExtFileToStringList(mTimingJsonUri);
+//        String str2 = FileOperateUtil.loadExtFileToString(mTimingJsonUri);
+//        
+//        
         
         if (mTimingJsonUri != null && mAudioUri != null) {
             startFullScreenPlayerActivity();

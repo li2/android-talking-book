@@ -59,21 +59,21 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_skip_previous_white_48dp" />
+            android:src="@drawable/ic_skip_previous_white_24dp" />
 
         <ImageView
             android:id="@+id/catcher_playPause"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:src="@drawable/ic_play_arrow_white_48dp" />
+            android:src="@drawable/ic_play_arrow_white_24dp" />
 
         <ImageView
             android:id="@+id/catcher_skipNext"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_skip_next_white_48dp" />
+            android:src="@drawable/ic_skip_next_white_24dp" />
     </LinearLayout>
 
 </TableLayout>

@@ -84,8 +84,11 @@ public class FullScreenPlayerActivity extends FragmentActivity
         mCurrentTimeLabel = (TextView) findViewById(R.id.catcher_currentTimeLabel);
         mDurationLabel = (TextView) findViewById(R.id.catcher_durationLabel);
         
-        mPlayDrawable = getResources().getDrawable(R.drawable.ic_play_arrow_white_48dp);
-        mPauseDrawable = getResources().getDrawable(R.drawable.ic_pause_white_48dp);
+        mSkipPrevView.setVisibility(View.GONE);
+        mSkipNextView.setVisibility(View.GONE);
+        
+        mPlayDrawable = getResources().getDrawable(R.drawable.ic_play_arrow_white_24dp);
+        mPauseDrawable = getResources().getDrawable(R.drawable.ic_pause_white_24dp);
 
         mPlayPauseView.setOnClickListener(mPlayPauseViewOnClickListener);        
         mSeekBar.setOnSeekBarChangeListener(mSeekBarOnSeekBarChangeListener);
@@ -93,7 +96,7 @@ public class FullScreenPlayerActivity extends FragmentActivity
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         Fragment oldLrcFragment = fm.findFragmentById(R.id.catcher_lrcFragmentContainer);
-        Fragment newLrcFragment = LrcFragment.newInstance("test2.lrc");
+        Fragment newLrcFragment = LrcFragment.newInstance(mLrcUri);
         mLrcFragment = (LrcFragment)newLrcFragment;
         if (oldLrcFragment != null) {
             ft.remove(oldLrcFragment);
@@ -224,7 +227,9 @@ public class FullScreenPlayerActivity extends FragmentActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mSeekBar.setProgress(mPlayerController.getCurrentPosition());
+                int msec = mPlayerController.getCurrentPosition();
+                mSeekBar.setProgress(msec);
+                mLrcFragment.seekLrcToTime(msec);
             }
         });
     }
@@ -238,18 +243,9 @@ public class FullScreenPlayerActivity extends FragmentActivity
     
     // LrcFragment callback ***************************************************
     @Override
-    public void onLrcItemSelected(int lrcRow) {
-        int milliseconds = mPlayerController.getCurrentPosition();
-        milliseconds -= 567; //startFullScreenPlayerActivity since human click the item has a little delay, maybe 567ms.
-        milliseconds = (milliseconds > 0) ? milliseconds : 0;
-        int minutesPart = (milliseconds/1000)/60;
-        int secondsPart = ((int)(milliseconds/1000))%60;
-        int msPart = milliseconds - (minutesPart * 60 + secondsPart) * 1000;
-        msPart = msPart > 99 ? 99 : msPart;
-        String timestampStr = String.format(Locale.US, "[%02d:%02d.%02d]", minutesPart, secondsPart, msPart);
-        Log.d(TAG, "onLrcItemSelected: Lrc Row " + lrcRow + ":" + timestampStr);
-        
-        mLrcFragment.setTimestampStr(timestampStr);
+    public void onLrcItemSelected(int msec) {
+        Log.d(TAG, "onLrcItemSelected: " + msec/1000 + " seconds");
+        mPlayerController.seekToPosition(msec);
     }
 
     // Navigate Back to parent activity ***************************************

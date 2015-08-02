@@ -1,44 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/full_screen_background" >
 
-    <FrameLayout 
-        android:id="@+id/catcher_lrcFragmentContainer" 
+    <FrameLayout
+        android:id="@+id/catcher_lrcFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1" >
-        
-        <com.douzi.android.lrc.LrcView
-            android:id="@+id/catcher_lrcView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
     </FrameLayout>
-    
-    <SeekBar
-        android:id="@+id/catcher_seekbar"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    
-    <!-- TableLayout使用起来和LinearLayout差不多。可使用TableRow，而非嵌套使用的LinearLayout，来布置组件。
-        TableRow子组件的行为方式类似于表里的单元格。联合使用TableLayout与TableRow，可更容易地布置形成排列整齐的视图。
-        TableRow组件无需声明高度和宽度的属性定义。它使用的是TableLayout的高度和宽度属性定义及其所有其他属性定义。-->
-    <TableRow
+        android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:gravity="center|bottom" >
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
 
-        <Button
-            android:id="@+id/catcher_playButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/catcher_play" />
+        <TextView
+            android:id="@+id/catcher_currentTimeLabel"
+            android:layout_width="32dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0"
+            android:gravity="center_vertical"
+            android:hint="00:22"
+            android:maxLines="1"
+            android:textColor="@color/time_label_font"
+            android:textSize="12sp" />
 
-        <Button
-            android:id="@+id/catcher_stopButton"
-            android:layout_width="wrap_content"
+        <SeekBar
+            android:id="@+id/catcher_seekbar"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/catcher_stop" />
-    </TableRow>
+            android:layout_gravity="center"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/catcher_durationLabel"
+            android:layout_width="32dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0"
+            android:gravity="center_vertical"
+            android:hint="06:00"
+            android:maxLines="1"
+            android:textColor="@color/time_label_font"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp" >
+
+        <ImageView
+            android:id="@+id/catcher_skipPrev"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_skip_previous_white_48dp" />
+
+        <ImageView
+            android:id="@+id/catcher_playPause"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:src="@drawable/ic_play_arrow_white_48dp" />
+
+        <ImageView
+            android:id="@+id/catcher_skipNext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_skip_next_white_48dp" />
+    </LinearLayout>
 
 </TableLayout>

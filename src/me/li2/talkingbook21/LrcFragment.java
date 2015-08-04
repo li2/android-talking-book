@@ -52,6 +52,10 @@ public class LrcFragment extends ListFragment {
         // Get timing Json file uri from bundle.
         Uri timingJsonUri = Uri.parse(getArguments().getString(EXTRA_LRC_URI));
         String timingJsonString = FileOperateUtil.loadExtFileToString(timingJsonUri);
+        // for debug
+        if (timingJsonString == null) {
+            timingJsonString = FileOperateUtil.loadAssetsFileToString(getActivity(), "c1_timing.json");
+        }
         JSONObject jsonObj = null;
         JSONArray jsonArray = null;
         mLrcArray = new ArrayList<String>();
@@ -70,7 +74,7 @@ public class LrcFragment extends ListFragment {
                 jsonArray = jsonObj.getJSONArray("words");
                 for (int index = 0; index < jsonArray.length(); index++) {
                     JSONArray obj = jsonArray.getJSONArray(index);
-                    Log.d(TAG, String.format("%-5.3f  %s", (double)obj.get(1), (String)obj.get(0)));
+//                    Log.d(TAG, String.format("%-5.3f  %s", (double)obj.get(1), (String)obj.get(0)));
                     mLrcArray.add((String)obj.get(0));
                     double seconds = (double)obj.get(1);
                     mTimingArray.add((int)(seconds*1000));
@@ -162,5 +166,5 @@ public class LrcFragment extends ListFragment {
             }
             return view;
         }
-    } 
+    }
 }

@@ -27,6 +27,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import me.li2.audioplayer.AudioPlayerController;
 import me.li2.audioplayer.AudioPlayerController.PlaybackState;
+import me.li2.talkingbook21.ChapterPageFragment.OnWordClickListener;
 
 public class FullScreenPlayerActivity extends FragmentActivity
     implements LrcFragment.Callbacks {
@@ -36,13 +37,13 @@ public class FullScreenPlayerActivity extends FragmentActivity
     private final static String TAG = "FullScreenPlayerActivity";
     private final static int PROGRESS_UPDATE_INTERVAL = 200;
     
-    private LrcFragment mLrcFragment;
     private SeekBar mSeekBar;
     private TextView mCurrentTimeLabel;
     private TextView mDurationLabel;
     private ImageView mPlayPauseView;
     private ImageView mSkipPrevView;
     private ImageView mSkipNextView;
+    private ChapterPageFragment mLrcFragment;
     
     private Handler mHandler = new Handler();
     private AudioPlayerController mPlayerController;
@@ -94,13 +95,17 @@ public class FullScreenPlayerActivity extends FragmentActivity
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
+        
         Fragment oldLrcFragment = fm.findFragmentById(R.id.catcher_lrcFragmentContainer);
-        Fragment newLrcFragment = LrcFragment.newInstance(mLrcUri);
-        mLrcFragment = (LrcFragment)newLrcFragment;
+        Fragment newLrcFragment = ChapterPageFragment.newInstance(mLrcUri, 0, 500);
+        mLrcFragment = (ChapterPageFragment) newLrcFragment;
+        mLrcFragment.setOnWordClickListener(mOnWordClickListener);
+        
         if (oldLrcFragment != null) {
             ft.remove(oldLrcFragment);
         }
         ft.add(R.id.catcher_lrcFragmentContainer, newLrcFragment);
+        
         ft.commit();
     }
     
@@ -247,6 +252,13 @@ public class FullScreenPlayerActivity extends FragmentActivity
         mPlayerController.seekToPosition(msec);
     }
 
+    private OnWordClickListener mOnWordClickListener = new OnWordClickListener() {
+        @Override
+        public void onWordClick(int msec) {
+            mPlayerController.seekToPosition(msec);
+        }
+    };
+    
     // Navigate Back to parent activity ***************************************
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

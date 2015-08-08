@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import me.li2.talkingbook21.data.TalkingBookChapter;
 
 public class LrcFragment extends ListFragment {
     
@@ -28,9 +29,10 @@ public class LrcFragment extends ListFragment {
     
     private static int sSelectedRow = -1;
     private LrcAdapter mLrcAdapter;
-    private ArrayList<String> mLrcArray;
-    private ArrayList<Integer> mTimingArray;
+    private List<String> mLrcArray;
+    private List<Integer> mTimingArray;
     private Callbacks mCallbacks;
+    private TalkingBookChapter mCharacter;
 
     public interface Callbacks {
         void onLrcItemSelected(int msec);
@@ -51,38 +53,9 @@ public class LrcFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         // Get timing Json file uri from bundle.
         Uri timingJsonUri = Uri.parse(getArguments().getString(EXTRA_LRC_URI));
-        String timingJsonString = FileOperateUtil.loadExtFileToString(timingJsonUri);
-        // for debug
-        if (timingJsonString == null) {
-            timingJsonString = FileOperateUtil.loadAssetsFileToString(getActivity(), "c1_timing.json");
-        }
-        JSONObject jsonObj = null;
-        JSONArray jsonArray = null;
-        mLrcArray = new ArrayList<String>();
-        mTimingArray = new ArrayList<Integer>();
-        
-        try {
-            jsonObj = new JSONObject(timingJsonString);
-        } catch (JSONException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-               
-        if (jsonObj != null) {
-            Log.d(TAG, "parse json");
-            try {
-                jsonArray = jsonObj.getJSONArray("words");
-                for (int index = 0; index < jsonArray.length(); index++) {
-                    JSONArray obj = jsonArray.getJSONArray(index);
-//                    Log.d(TAG, String.format("%-5.3f  %s", (double)obj.get(1), (String)obj.get(0)));
-                    mLrcArray.add((String)obj.get(0));
-                    double seconds = (double)obj.get(1);
-                    mTimingArray.add((int)(seconds*1000));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-          }
+        mCharacter = TalkingBookChapter.get(timingJsonUri);
+        mLrcArray = mCharacter.getWordList(0, mCharacter.size());
+        mTimingArray = mCharacter.getTimingList(0, mCharacter.size());
                 
         // Set listfragment adapter datasource.
         mLrcAdapter = new LrcAdapter(mLrcArray);

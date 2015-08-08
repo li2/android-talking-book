@@ -2,15 +2,9 @@ package me.li2.talkingbook21;
 
 import java.util.List;
 
-import android.content.DialogInterface;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,15 +15,11 @@ import android.widget.TextView;
 import me.li2.talkingbook21.data.TalkingBookChapter;
 
 public class ChapterPageFragment extends Fragment implements OnClickListener {
+    @SuppressWarnings("unused")
     private static final String TAG = "ChapterPageFragment";
     private static final String EXTRA_TIMING_JSON_URI = "me.li2.talkingbook21.ChapterPageFragment.timing_json_uri";
     private static final String EXTRA_FROM_INDEX = "me.li2.talkingbook21.ChapterPageFragment.from_index";
     private static final String EXTRA_COUNT = "me.li2.talkingbook21.ChapterPageFragment.count";
-
-    private static int DEFAULT_FONT_SIZE = 16;
-    private static int DEFAULT_WORD_SPACE = 8;
-    private static int DEFAULT_LINE_SPACE = 4;
-    private static int DEFAULT_PAGE_PADDING = 16;
     
     private Uri mJsonUri;
     private int mFromIndex;
@@ -77,32 +67,32 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chapter_page, container, false);
         
+        ChapterPageUtil pageUtil = new ChapterPageUtil(getActivity());
         LinearLayout pageLayout = (LinearLayout) view.findViewById(R.id.rootLayout);
         LinearLayout lineLayout = new LinearLayout(getActivity());
         lineLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 64));
         pageLayout.addView(lineLayout);
+        @SuppressWarnings("unused")
         int count = 1;
         
-        int pageWidth = getPageWidth();
-        int pageHeight = getPageHeight();
-        int lineHeight = getLineHeight();
+        int pageWidth = pageUtil.getPageWidth();
+        int pageHeight = pageUtil.getPageHeight();
+        int lineHeight = pageUtil.getLineHeight();
         int remainingWidth = pageWidth;
         int remainingHeight = pageHeight - lineHeight;
         
-        int N = mCount;
-        
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < mCount; i++) {
             // create a new TextView
             String word = mWordList.get(i);
             int timing = mTimingList.get(i);
             TextView wordTextView = createTextView(word, timing);
-            int wordWidth = getStringWidth(word);
+            int wordWidth = pageUtil.getStringWidth(word);
             if (wordWidth > remainingWidth) {
                 lineLayout = new LinearLayout(getActivity());
                 count++;
                 lineLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 64));
                 
-                if (remainingHeight <= getLineHeight()) {
+                if (remainingHeight <= lineHeight) {
                     break;
                 }
                 pageLayout.addView(lineLayout);
@@ -112,7 +102,7 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
             // add the TextView to the LinearLayout
             lineLayout.addView(wordTextView);
             remainingWidth -= wordWidth;
-            Log.d(TAG, String.format("line%d word%d %s wordwidth %d, remaining width %d, remaining height %d", count, i, word, wordWidth, remainingWidth, remainingHeight));
+            // Log.d(TAG, String.format("line%d word%d %s wordwidth %d, remaining width %d, remaining height %d", count, i, word, wordWidth, remainingWidth, remainingHeight));
         }
         
         return view;
@@ -129,7 +119,7 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         }
     }
     
-    public void seekLrcToTime(int msec) {
+    public void seekChapterToTime(int msec) {
         View page = getView();
         if (mTimingList == null || mTimingList.size() <= 0 || page == null) {
             return;
@@ -164,47 +154,10 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
     private TextView createTextView(String word, int timing) {
         TextView aword = new TextView(getActivity());
         aword.setText(word);
-        aword.setPadding(0, 0, DEFAULT_WORD_SPACE, 0);
-        aword.setTextSize(DEFAULT_FONT_SIZE);
+        aword.setPadding(0, 0, ChapterPageUtil.DEFAULT_WORD_SPACE, 0);
+        aword.setTextSize(ChapterPageUtil.DEFAULT_FONT_SIZE);
         aword.setTag(timing);
         aword.setOnClickListener(this);
         return aword;
-    }
-    
-    private int getStringWidth(String content) {
-        Rect bounds = new Rect();
-        TextView textView = new TextView(getActivity());
-        textView.setTextSize(DEFAULT_FONT_SIZE);
-        Paint textPaint = textView.getPaint();
-        textPaint.getTextBounds(content, 0, content.length(), bounds);
-        return bounds.width() + DEFAULT_WORD_SPACE;
-    }
-    
-    private int getStringHeight(String content) {
-        Rect bounds = new Rect();
-        TextView textView = new TextView(getActivity());
-        textView.setTextSize(DEFAULT_FONT_SIZE);
-        Paint textPaint = textView.getPaint();
-        textPaint.getTextBounds(content, 0, content.length(), bounds);
-        return bounds.height();
-    }
-    
-    
-    private int getPageWidth() {
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size.x;
-    }
-    
-    private int getPageHeight() {
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size.y;
-    }
-    
-    private int getLineHeight() {
-        return 64;
-    }
+    }    
 }

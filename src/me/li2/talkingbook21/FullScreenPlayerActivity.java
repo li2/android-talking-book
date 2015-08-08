@@ -11,11 +11,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -29,8 +27,7 @@ import me.li2.audioplayer.AudioPlayerController;
 import me.li2.audioplayer.AudioPlayerController.PlaybackState;
 import me.li2.talkingbook21.ChapterPageFragment.OnWordClickListener;
 
-public class FullScreenPlayerActivity extends FragmentActivity
-    implements LrcFragment.Callbacks {
+public class FullScreenPlayerActivity extends FragmentActivity {
     
     public final static String EXTRA_AUDIO_PATH = "me.li2.android.lrcbuilder.audio_path";
     public final static String EXTRA_LRC_PATH = "me.li2.android.lrcbuilder.lrc_path";
@@ -43,7 +40,8 @@ public class FullScreenPlayerActivity extends FragmentActivity
     private ImageView mPlayPauseView;
     private ImageView mSkipPrevView;
     private ImageView mSkipNextView;
-    private ChapterPageFragment mLrcFragment;
+    private ViewPager mChapterViewPager;
+    private ChapterPageAdapter mChapterPageAdapter;
     
     private Handler mHandler = new Handler();
     private AudioPlayerController mPlayerController;
@@ -83,6 +81,7 @@ public class FullScreenPlayerActivity extends FragmentActivity
         mSeekBar = (SeekBar) findViewById(R.id.catcher_seekbar);
         mCurrentTimeLabel = (TextView) findViewById(R.id.catcher_currentTimeLabel);
         mDurationLabel = (TextView) findViewById(R.id.catcher_durationLabel);
+        mChapterViewPager = (ViewPager) findViewById(R.id.catcher_chapterViewPager);
         
         mSkipPrevView.setVisibility(View.GONE);
         mSkipNextView.setVisibility(View.GONE);
@@ -93,20 +92,8 @@ public class FullScreenPlayerActivity extends FragmentActivity
         mPlayPauseView.setOnClickListener(mPlayPauseViewOnClickListener);        
         mSeekBar.setOnSeekBarChangeListener(mSeekBarOnSeekBarChangeListener);
 
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        
-        Fragment oldLrcFragment = fm.findFragmentById(R.id.catcher_lrcFragmentContainer);
-        Fragment newLrcFragment = ChapterPageFragment.newInstance(mLrcUri, 0, 500);
-        mLrcFragment = (ChapterPageFragment) newLrcFragment;
-        mLrcFragment.setOnWordClickListener(mOnWordClickListener);
-        
-        if (oldLrcFragment != null) {
-            ft.remove(oldLrcFragment);
-        }
-        ft.add(R.id.catcher_lrcFragmentContainer, newLrcFragment);
-        
-        ft.commit();
+        mChapterPageAdapter = new ChapterPageAdapter(this, getSupportFragmentManager(), mLrcUri);
+        mChapterViewPager.setAdapter(mChapterPageAdapter);
     }
     
     @Override
@@ -233,7 +220,8 @@ public class FullScreenPlayerActivity extends FragmentActivity
             public void run() {
                 int msec = mPlayerController.getCurrentPosition();
                 mSeekBar.setProgress(msec);
-                mLrcFragment.seekLrcToTime(msec);
+//                mLrcFragment.seekChapterToTime(msec);
+                // TODO
             }
         });
     }
@@ -243,13 +231,6 @@ public class FullScreenPlayerActivity extends FragmentActivity
         // Update Seekbar & TotalTimeLabel
         mSeekBar.setMax(duration);
         mDurationLabel.setText(DateUtils.formatElapsedTime(duration/1000));
-    }
-    
-    // LrcFragment callback ***************************************************
-    @Override
-    public void onLrcItemSelected(int msec) {
-        Log.d(TAG, "onLrcItemSelected: " + msec/1000 + " seconds");
-        mPlayerController.seekToPosition(msec);
     }
 
     private OnWordClickListener mOnWordClickListener = new OnWordClickListener() {

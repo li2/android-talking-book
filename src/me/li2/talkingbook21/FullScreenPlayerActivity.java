@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -25,7 +26,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import me.li2.audioplayer.AudioPlayerController;
 import me.li2.audioplayer.AudioPlayerController.PlaybackState;
-import me.li2.talkingbook21.ChapterPageFragment.OnWordClickListener;
+import me.li2.talkingbook21.ChapterPageAdapter.OnChapterPageWordClickListener;
 
 public class FullScreenPlayerActivity extends FragmentActivity {
     
@@ -50,7 +51,11 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     private Drawable mPauseDrawable;
     private Uri mAudioUri;
     private Uri mLrcUri;
+    private int mChapterPageSelectedIndex;
+    // set this flag when audio position out of page, and clear this flag when page selected.    
+    private boolean isAudioPositionOutOfPage;
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +98,9 @@ public class FullScreenPlayerActivity extends FragmentActivity {
         mSeekBar.setOnSeekBarChangeListener(mSeekBarOnSeekBarChangeListener);
 
         mChapterPageAdapter = new ChapterPageAdapter(this, getSupportFragmentManager(), mLrcUri);
+        mChapterPageAdapter.setOnChapterPageWordClickListener(mOnPageAdapterWordClickListener);
         mChapterViewPager.setAdapter(mChapterPageAdapter);
+        mChapterViewPager.setOnPageChangeListener(mOnPageChangeListener);
     }
     
     @Override
@@ -220,8 +227,14 @@ public class FullScreenPlayerActivity extends FragmentActivity {
             public void run() {
                 int msec = mPlayerController.getCurrentPosition();
                 mSeekBar.setProgress(msec);
-//                mLrcFragment.seekChapterToTime(msec);
-                // TODO
+                mChapterPageAdapter.seekChapterToTime(msec);
+                // check if seeking time is out of selected page, if true, then set ViewPager to current item.
+                if (isAudioPositionOutOfPage(msec)) {
+                    isAudioPositionOutOfPage = true;
+                    // onPageSelected will be called after setCurrentItem,
+                    // so we set a flag to notify onPageSelected don't seek audio again.
+                    mChapterViewPager.setCurrentItem(mChapterPageAdapter.getReadingPage(msec));
+                }
             }
         });
     }
@@ -233,12 +246,42 @@ public class FullScreenPlayerActivity extends FragmentActivity {
         mDurationLabel.setText(DateUtils.formatElapsedTime(duration/1000));
     }
 
-    private OnWordClickListener mOnWordClickListener = new OnWordClickListener() {
+    private OnChapterPageWordClickListener mOnPageAdapterWordClickListener = new OnChapterPageWordClickListener() {
         @Override
-        public void onWordClick(int msec) {
+        public void onChapterPageWordClick(int msec) {
             mPlayerController.seekToPosition(msec);
         }
     };
+    
+    private ViewPager.OnPageChangeListener mOnPageChangeListener = new OnPageChangeListener() {
+        @Override
+        public void onPageSelected(int position) {
+            mChapterPageSelectedIndex = position;
+            if (isAudioPositionOutOfPage) {
+                Log.d(TAG, "onPageSelected(): out of page, no seek again!");
+                // in case for reading the beginning word twice!
+                isAudioPositionOutOfPage = false;
+            } else {
+                mPlayerController.seekToPosition(mChapterPageAdapter.getPageTiming(position));
+            }
+        }
+        
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+        
+        @Override
+        public void onPageScrollStateChanged(int state) {}
+    };
+    
+    private boolean isAudioPositionOutOfPage(int msec) {
+        int readingPage = mChapterPageAdapter.getReadingPage(msec);
+        // Log.d(TAG, "reading page " + readingPage + ", ViewPager count " + mChapterPageAdapter.getCount() + ", Selected " + mChapterPageSelectedIndex);
+        if (readingPage >=0 && readingPage < mChapterPageAdapter.getCount() && readingPage != mChapterPageSelectedIndex) {
+            Log.d(TAG, "audio already out of page!");
+            return true;
+        }
+        return false;
+    }
     
     // Navigate Back to parent activity ***************************************
     @Override

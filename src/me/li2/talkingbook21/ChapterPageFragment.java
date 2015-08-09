@@ -5,6 +5,7 @@ import java.util.List;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,7 +16,6 @@ import android.widget.TextView;
 import me.li2.talkingbook21.data.TalkingBookChapter;
 
 public class ChapterPageFragment extends Fragment implements OnClickListener {
-    @SuppressWarnings("unused")
     private static final String TAG = "ChapterPageFragment";
     private static final String EXTRA_TIMING_JSON_URI = "me.li2.talkingbook21.ChapterPageFragment.timing_json_uri";
     private static final String EXTRA_FROM_INDEX = "me.li2.talkingbook21.ChapterPageFragment.from_index";
@@ -119,9 +119,11 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         }
     }
     
+    // This method called to update view in order to highlight the reading word.
     public void seekChapterToTime(int msec) {
         View page = getView();
         if (mTimingList == null || mTimingList.size() <= 0 || page == null) {
+            Log.d(TAG, "not ready to seek chapter to time");
             return;
         }
         if (lastReadingWord != null) {
@@ -131,12 +133,17 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         int tag = findReadingWord(msec);
         TextView readingWord = (TextView) page.findViewWithTag(tag);
         if (readingWord != null) {
-            readingWord.setBackgroundColor(getActivity().getResources().getColor(R.color.blue));
+            readingWord.setBackgroundColor(getActivity().getResources().getColor(android.R.color.holo_green_light));
             lastReadingWord = readingWord;
         }
     }
     
+    // Find the word base on given time, since the tag of word TextView is set to time.
     private int findReadingWord(int msec) {
+        if (msec < mTimingList.get(0) || msec > mTimingList.get(mTimingList.size()-1)) {
+            Log.d(TAG, "cannot find reading word " + msec + " from " + mTimingList.get(0) + " to " + mTimingList.get(mTimingList.size()-1));
+            return -1;
+        }
         int nearestDiff = mTimingList.get(0);
         int nearestTag = mTimingList.get(0);
         int count = mTimingList.size();

@@ -12,18 +12,11 @@
     <color name="smokeWhite">#EBEBEB</color><!-- 烟白色 -->
 
     <color name="full_screen_background">@color/white</color>
-    <color name="time_label_font">@color/smokeWhite</color>
+    <color name="time_label_font">@color/darkgray</color>
     <color name="playback_seekbar_primary">@android:color/holo_green_light</color>
     <color name="playback_seekbar_secondary">@color/smokeWhite</color>
     
-    <color name="lrc_fragment_background">@color/full_screen_background</color>
-    <color name="lrc_unselected">@color/lrc_fragment_background</color>
-    <color name="lrc_selected">@color/darkgray</color>
-    <color name="lrc_timestamp_part">@android:color/holo_green_dark</color>
-    <color name="lrc_text_part">@color/smokeWhite</color>
-    
-    <color name="button_selected">@android:color/holo_green_light</color>
-    <color name="button_selected_dark">@android:color/holo_green_dark</color>
+    <color name="chapter_page_background">@color/full_screen_background</color>
+    <color name="chapter_word_isreading">@android:color/holo_green_light</color>
 
-     
 </resources>

@@ -58,7 +58,7 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         mJsonUri = Uri.parse(getArguments().getString(EXTRA_TIMING_JSON_URI));
         mFromIndex = getArguments().getInt(EXTRA_FROM_INDEX);
         mCount = getArguments().getInt(EXTRA_COUNT);
-        mChapter = TalkingBookChapter.get(mJsonUri);
+        mChapter = TalkingBookChapter.get(getActivity(), mJsonUri);
         mWordList = mChapter.getWordList(mFromIndex, mCount);
         mTimingList = mChapter.getTimingList(mFromIndex, mCount);
     }
@@ -79,7 +79,7 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         int pageHeight = pageUtil.getPageHeight();
         int lineHeight = pageUtil.getLineHeight();
         int remainingWidth = pageWidth;
-        int remainingHeight = pageHeight - lineHeight;
+        int remainingHeight = pageHeight - lineHeight*3;
         
         for (int i = 0; i < mCount; i++) {
             // create a new TextView
@@ -127,13 +127,13 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
             return;
         }
         if (lastReadingWord != null) {
-            lastReadingWord.setBackgroundColor(getActivity().getResources().getColor(R.color.white));
+            lastReadingWord.setBackgroundColor(getActivity().getResources().getColor(R.color.chapter_page_background));
             lastReadingWord = null;
         }
         int tag = findReadingWord(msec);
         TextView readingWord = (TextView) page.findViewWithTag(tag);
         if (readingWord != null) {
-            readingWord.setBackgroundColor(getActivity().getResources().getColor(android.R.color.holo_green_light));
+            readingWord.setBackgroundColor(getActivity().getResources().getColor(R.color.chapter_word_isreading));
             lastReadingWord = readingWord;
         }
     }
@@ -141,7 +141,7 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
     // Find the word base on given time, since the tag of word TextView is set to time.
     private int findReadingWord(int msec) {
         if (msec < mTimingList.get(0) || msec > mTimingList.get(mTimingList.size()-1)) {
-            Log.d(TAG, "cannot find reading word " + msec + " from " + mTimingList.get(0) + " to " + mTimingList.get(mTimingList.size()-1));
+            // Log.d(TAG, "cannot find reading word " + msec + " from " + mTimingList.get(0) + " to " + mTimingList.get(mTimingList.size()-1));
             return -1;
         }
         int nearestDiff = mTimingList.get(0);

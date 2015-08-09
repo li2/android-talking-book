@@ -102,7 +102,7 @@ public class ChapterPageAdapter extends FragmentPagerAdapter {
     
     // INIT data model.
     private void splitChapterToPages(Uri jsonUri) {
-        TalkingBookChapter chapter = TalkingBookChapter.get(jsonUri);
+        TalkingBookChapter chapter = TalkingBookChapter.get(mAppContext, jsonUri);
         int size = chapter.size();
         List<String> wordList =  chapter.getWordList(0, size);
         List<Integer> timingList = chapter.getTimingList(0, size);
@@ -129,7 +129,7 @@ public class ChapterPageAdapter extends FragmentPagerAdapter {
         int pageHeight = pageUtil.getPageHeight();
         int remainingWidth = pageWidth;
         int lineHeight = pageUtil.getLineHeight();
-        int remainingHeight = pageHeight - lineHeight;
+        int remainingHeight = pageHeight - lineHeight*3;
         
         int i = startIndex;
         for (; i<words.size(); i++) {

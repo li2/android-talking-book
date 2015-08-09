@@ -24,7 +24,11 @@
             </intent-filter>
         </activity>
         
-        <activity android:name="me.li2.talkingbook21.FullScreenPlayerActivity" />
+        <activity android:name="me.li2.talkingbook21.FullScreenPlayerActivity" >
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChapterListActivity"/>
+        </activity>
+        
         </application>
     
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

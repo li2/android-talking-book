@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">21 Talking Book</string>
+    <string name="app_name">TalkingBook21</string>
+    <string name="catcher_playPause">Paly Pause</string>
+    <string name="catcher_forward5">forward 5s</string>
+    <string name="catcher_replay5">replay 5s</string>
     <string name="catcher_play">Play</string>
     <string name="catcher_pause">Pause</string>
     <string name="catcher_stop">Stop</string>

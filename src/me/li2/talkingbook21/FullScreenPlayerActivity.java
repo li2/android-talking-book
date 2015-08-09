@@ -17,12 +17,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import me.li2.audioplayer.AudioPlayerController;
 import me.li2.audioplayer.AudioPlayerController.PlaybackState;
@@ -35,12 +32,9 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     private final static String TAG = "FullScreenPlayerActivity";
     private final static int PROGRESS_UPDATE_INTERVAL = 200;
     
-    private SeekBar mSeekBar;
     private TextView mCurrentTimeLabel;
     private TextView mDurationLabel;
-    private ImageView mPlayPauseView;
-    private ImageView mSkipPrevView;
-    private ImageView mSkipNextView;
+    private MenuItem mPlayPauseMenuItem;
     private ViewPager mChapterViewPager;
     private ChapterPageAdapter mChapterPageAdapter;
     
@@ -74,28 +68,18 @@ public class FullScreenPlayerActivity extends FragmentActivity {
             if (NavUtils.getParentActivityName(this) != null) {
                 ActionBar actionBar = getActionBar();
                 if (actionBar != null) {
-                    actionBar.setTitle(title);
+                    actionBar.setTitle("");
                     actionBar.setDisplayHomeAsUpEnabled(true);
                 }
             }
         }
         
-        mPlayPauseView = (ImageView) findViewById(R.id.catcher_playPause);
-        mSkipPrevView = (ImageView) findViewById(R.id.catcher_skipPrev);
-        mSkipNextView = (ImageView) findViewById(R.id.catcher_skipNext);
-        mSeekBar = (SeekBar) findViewById(R.id.catcher_seekbar);
         mCurrentTimeLabel = (TextView) findViewById(R.id.catcher_currentTimeLabel);
         mDurationLabel = (TextView) findViewById(R.id.catcher_durationLabel);
         mChapterViewPager = (ViewPager) findViewById(R.id.catcher_chapterViewPager);
         
-        mSkipPrevView.setVisibility(View.GONE);
-        mSkipNextView.setVisibility(View.GONE);
-        
-        mPlayDrawable = getResources().getDrawable(R.drawable.ic_play_arrow_white_24dp);
-        mPauseDrawable = getResources().getDrawable(R.drawable.ic_pause_white_24dp);
-
-        mPlayPauseView.setOnClickListener(mPlayPauseViewOnClickListener);        
-        mSeekBar.setOnSeekBarChangeListener(mSeekBarOnSeekBarChangeListener);
+        mPlayDrawable = getResources().getDrawable(R.drawable.ic_play_circle_outline_white_36dp);
+        mPauseDrawable = getResources().getDrawable(R.drawable.ic_pause_circle_outline_white_36dp);
 
         mChapterPageAdapter = new ChapterPageAdapter(this, getSupportFragmentManager(), mLrcUri);
         mChapterPageAdapter.setOnChapterPageWordClickListener(mOnPageAdapterWordClickListener);
@@ -133,57 +117,22 @@ public class FullScreenPlayerActivity extends FragmentActivity {
             updateDuration(duration);
         }
     };
-
-    private OnClickListener mPlayPauseViewOnClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            PlaybackState playbackState = mPlayerController.getPlaybackState();
-            switch (playbackState) {
-            case PLAYBACK_STATE_PLAYING:
-                mPlayerController.pause();
-                break;                
-            case PLAYBACK_STATE_STOPPED:
-            case PLAYBACK_STATE_PAUSED:
-                mPlayerController.play();
-                break;                    
-            default:
-                Log.d(TAG, "onClick with state " + playbackState);
-                break;
-            }
-        }
-    };
-    
-    private OnSeekBarChangeListener mSeekBarOnSeekBarChangeListener = new OnSeekBarChangeListener() {        
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            mPlayerController.seekToPosition(seekBar.getProgress());
-            scheduleSeekbarUpdate();
-        }
-        
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            stopSeekbarUpdate();
-        }
-        
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            mCurrentTimeLabel.setText(DateUtils.formatElapsedTime(progress/1000));
-        }
-    };
     
     private void updatePlaybackState(PlaybackState playbackState) {
         Log.d(TAG, "updatePlaybackState: " + playbackState);
         switch (playbackState) {
         case PLAYBACK_STATE_PLAYING:
-            mPlayPauseView.setVisibility(View.VISIBLE);
-            mPlayPauseView.setImageDrawable(mPauseDrawable);
+            if (mPlayPauseMenuItem != null) {
+                mPlayPauseMenuItem.setIcon(mPauseDrawable);
+            }
             scheduleSeekbarUpdate();
             break;
         case PLAYBACK_STATE_PAUSED:
         case PLAYBACK_STATE_STOPPED:
         case PLAYBACK_STATE_NONE:
-            mPlayPauseView.setVisibility(View.VISIBLE);
-            mPlayPauseView.setImageDrawable(mPlayDrawable);
+            if (mPlayPauseMenuItem != null) {
+                mPlayPauseMenuItem.setIcon(mPlayDrawable);
+            }
             stopSeekbarUpdate();
             break;            
         default:
@@ -226,7 +175,8 @@ public class FullScreenPlayerActivity extends FragmentActivity {
             @Override
             public void run() {
                 int msec = mPlayerController.getCurrentPosition();
-                mSeekBar.setProgress(msec);
+                // set SeekBar progress & current time label
+                mCurrentTimeLabel.setText(DateUtils.formatElapsedTime(msec/1000));
                 mChapterPageAdapter.seekChapterToTime(msec);
                 // check if seeking time is out of selected page, if true, then set ViewPager to current item.
                 if (isAudioPositionOutOfPage(msec)) {
@@ -242,7 +192,6 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     // Update duration label ************************************************** 
     private void updateDuration(int duration) {
         // Update Seekbar & TotalTimeLabel
-        mSeekBar.setMax(duration);
         mDurationLabel.setText(DateUtils.formatElapsedTime(duration/1000));
     }
 
@@ -292,8 +241,46 @@ public class FullScreenPlayerActivity extends FragmentActivity {
                 NavUtils.navigateUpFromSameTask(this);
             }
             return true;
+
+        case R.id.catcher_action_playPause:
+            onActionPlayPauseClick();
+            return true;
+
+        case R.id.catcher_action_forward5:
+            mPlayerController.seekToPosition(mPlayerController.getCurrentPosition()+5*1000);
+            return true;
+            
+        case R.id.catcher_action_replay5:
+            mPlayerController.seekToPosition(mPlayerController.getCurrentPosition()-5*1000);
+            return true;
+            
         default:
             return super.onOptionsItemSelected(item);
+        }
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_full_player, menu);
+        mPlayPauseMenuItem = menu.findItem(R.id.catcher_action_playPause);
+        return super.onCreateOptionsMenu(menu);
+    }
+    
+    private void onActionPlayPauseClick() {
+        PlaybackState playbackState = mPlayerController.getPlaybackState();
+        switch (playbackState) {
+        case PLAYBACK_STATE_PLAYING:
+            mPlayerController.pause();
+            break;
+        case PLAYBACK_STATE_STOPPED:
+        case PLAYBACK_STATE_PAUSED:
+            mPlayerController.play();
+            break;
+        default:
+            Log.d(TAG, "onClick with state " + playbackState);
+            break;
         }
     }
 }

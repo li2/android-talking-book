@@ -3,5 +3,9 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="time_label_font">12sp</dimen>
+    <dimen name="time_label_width">32dp</dimen>
+    <dimen name="chapter_position_indicator_layout_height">16dp</dimen>
+    <dimen name="chapter_page_h_padding">8dp</dimen>
 
 </resources>

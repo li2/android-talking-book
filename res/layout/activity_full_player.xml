@@ -10,69 +10,32 @@
         android:layout_height="match_parent"
         android:layout_weight="1" />
     
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/chapter_position_indicator_layout_height"
         android:layout_weight="0"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp" >
+        android:paddingLeft="@dimen/chapter_page_h_padding"
+        android:paddingRight="@dimen/chapter_page_h_padding" >
 
         <TextView
             android:id="@+id/catcher_currentTimeLabel"
-            android:layout_width="32dp"
+            android:layout_width="@dimen/time_label_width"
             android:layout_height="fill_parent"
-            android:layout_weight="0"
             android:gravity="center_vertical"
-            android:hint="00:22"
+            android:layout_gravity="start"
             android:maxLines="1"
             android:textColor="@color/time_label_font"
-            android:textSize="12sp" />
-
-        <SeekBar
-            android:id="@+id/catcher_seekbar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_weight="1" />
+            android:textSize="@dimen/time_label_font" />
 
         <TextView
             android:id="@+id/catcher_durationLabel"
-            android:layout_width="32dp"
+            android:layout_width="@dimen/time_label_width"
             android:layout_height="fill_parent"
-            android:layout_weight="0"
             android:gravity="center_vertical"
-            android:hint="06:00"
+            android:layout_gravity="end"
             android:maxLines="1"
             android:textColor="@color/time_label_font"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp" >
-
-        <ImageView
-            android:id="@+id/catcher_skipPrev"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_skip_previous_white_24dp" />
-
-        <ImageView
-            android:id="@+id/catcher_playPause"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:src="@drawable/ic_play_arrow_white_24dp" />
-
-        <ImageView
-            android:id="@+id/catcher_skipNext"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_skip_next_white_24dp" />
-    </LinearLayout>
+            android:textSize="@dimen/time_label_font" />
+    </FrameLayout>
 
 </TableLayout>

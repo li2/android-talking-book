@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 import me.li2.sdcard.FileOperateUtil;
@@ -19,8 +20,12 @@ public class TalkingBookChapter {
     private ArrayList<String> mWordArray;
     private ArrayList<Integer> mTimingArray;
 
-    private TalkingBookChapter(Uri timingJsonUri) {
+    private TalkingBookChapter(Context context, Uri timingJsonUri) {
         String timingJsonString = FileOperateUtil.loadExtFileToString(timingJsonUri);
+        if (timingJsonString == null) {
+            // just for debug
+            timingJsonString = FileOperateUtil.loadAssetsFileToString(context, "c1_timing.json");
+        }
         JSONObject jsonObj = null;
         JSONArray jsonArray = null;
         mWordArray = new ArrayList<String>();
@@ -45,9 +50,9 @@ public class TalkingBookChapter {
     }
     
     // Setting up the singleton
-    public static TalkingBookChapter get(Uri timingJsonUri) {
+    public static TalkingBookChapter get(Context context, Uri timingJsonUri) {
         if (sChapter == null) {
-            sChapter = new TalkingBookChapter(timingJsonUri);
+            sChapter = new TalkingBookChapter(context, timingJsonUri);
         }
         return sChapter;
     }

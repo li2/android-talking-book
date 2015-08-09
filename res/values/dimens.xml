@@ -5,7 +5,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="time_label_font">12sp</dimen>
     <dimen name="time_label_width">32dp</dimen>
-    <dimen name="chapter_position_indicator_layout_height">16dp</dimen>
+    <dimen name="chapter_page_indicator_layout_height">24dp</dimen>
     <dimen name="chapter_page_h_padding">8dp</dimen>
+    <dimen name="chapter_page_indicator_padding">2dp</dimen>
 
 </resources>

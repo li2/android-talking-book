@@ -12,11 +12,18 @@
     
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/chapter_position_indicator_layout_height"
+        android:layout_height="@dimen/chapter_page_indicator_layout_height"
         android:layout_weight="0"
         android:paddingLeft="@dimen/chapter_page_h_padding"
         android:paddingRight="@dimen/chapter_page_h_padding" >
-
+        
+	    <com.viewpagerindicator.LinePageIndicator
+	        android:id="@+id/catcher_chapterPageIndicator"
+	        android:padding="@dimen/chapter_page_indicator_padding"
+	        android:layout_height="wrap_content"
+	        android:layout_width="match_parent"
+	        android:layout_gravity="top" />
+        
         <TextView
             android:id="@+id/catcher_currentTimeLabel"
             android:layout_width="@dimen/time_label_width"

@@ -17,6 +17,6 @@
     <color name="playback_seekbar_secondary">@color/smokeWhite</color>
     
     <color name="chapter_page_background">@color/full_screen_background</color>
-    <color name="chapter_word_isreading">@android:color/holo_green_light</color>
+    <color name="chapter_selected_highlight">@android:color/holo_green_light</color>
 
 </resources>

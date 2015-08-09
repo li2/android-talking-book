@@ -133,7 +133,7 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         int tag = findReadingWord(msec);
         TextView readingWord = (TextView) page.findViewWithTag(tag);
         if (readingWord != null) {
-            readingWord.setBackgroundColor(getActivity().getResources().getColor(R.color.chapter_word_isreading));
+            readingWord.setBackgroundColor(getActivity().getResources().getColor(R.color.chapter_selected_highlight));
             lastReadingWord = readingWord;
         }
     }

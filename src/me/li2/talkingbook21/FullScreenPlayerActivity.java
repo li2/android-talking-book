@@ -5,6 +5,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.viewpagerindicator.LinePageIndicator;
+
 import android.app.ActionBar;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -77,6 +79,7 @@ public class FullScreenPlayerActivity extends FragmentActivity {
         mCurrentTimeLabel = (TextView) findViewById(R.id.catcher_currentTimeLabel);
         mDurationLabel = (TextView) findViewById(R.id.catcher_durationLabel);
         mChapterViewPager = (ViewPager) findViewById(R.id.catcher_chapterViewPager);
+        LinePageIndicator indicator = (LinePageIndicator) findViewById(R.id.catcher_chapterPageIndicator);
         
         mPlayDrawable = getResources().getDrawable(R.drawable.ic_play_circle_outline_white_36dp);
         mPauseDrawable = getResources().getDrawable(R.drawable.ic_pause_circle_outline_white_36dp);
@@ -85,6 +88,11 @@ public class FullScreenPlayerActivity extends FragmentActivity {
         mChapterPageAdapter.setOnChapterPageWordClickListener(mOnPageAdapterWordClickListener);
         mChapterViewPager.setAdapter(mChapterPageAdapter);
         mChapterViewPager.setOnPageChangeListener(mOnPageChangeListener);
+
+        indicator.setViewPager(mChapterViewPager);
+        indicator.setOnPageChangeListener(mOnPageChangeListener);
+        indicator.setLineWidth(calculateIndicatorWidth());
+        indicator.setSelectedColor(getResources().getColor(R.color.chapter_selected_highlight));
     }
     
     @Override
@@ -232,7 +240,6 @@ public class FullScreenPlayerActivity extends FragmentActivity {
         return false;
     }
     
-    // Navigate Back to parent activity ***************************************
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -282,5 +289,15 @@ public class FullScreenPlayerActivity extends FragmentActivity {
             Log.d(TAG, "onClick with state " + playbackState);
             break;
         }
+    }
+    
+    private int calculateIndicatorWidth() {
+        ChapterPageUtil util = new ChapterPageUtil(this);
+        int pageWidth = util.getPageWidth();
+        float hPadding = getResources().getDimension(R.dimen.chapter_page_h_padding) * 2;
+        float indicatorPadding = getResources().getDimension(R.dimen.chapter_page_indicator_padding);
+        int count = mChapterPageAdapter.getCount();
+        int width = (int)(pageWidth - hPadding - indicatorPadding * (count - 1)) / count;
+        return width;
     }
 }

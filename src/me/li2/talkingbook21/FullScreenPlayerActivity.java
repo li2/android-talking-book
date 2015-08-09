@@ -92,6 +92,8 @@ public class FullScreenPlayerActivity extends FragmentActivity {
         indicator.setViewPager(mChapterViewPager);
         indicator.setOnPageChangeListener(mOnPageChangeListener);
         indicator.setLineWidth(calculateIndicatorWidth());
+        indicator.setStrokeWidth(getResources().getDimension(R.dimen.chapter_page_indicator_stroke_width));
+        indicator.setGapWidth(getResources().getDimension(R.dimen.chapter_page_indicator_gap_width));
         indicator.setSelectedColor(getResources().getColor(R.color.chapter_selected_highlight));
     }
     
@@ -293,11 +295,10 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     
     private int calculateIndicatorWidth() {
         ChapterPageUtil util = new ChapterPageUtil(this);
-        int pageWidth = util.getPageWidth();
-        float hPadding = getResources().getDimension(R.dimen.chapter_page_h_padding) * 2;
-        float indicatorPadding = getResources().getDimension(R.dimen.chapter_page_indicator_padding);
+        int pageWidth = util.getChapterPageWidth();
+        float indicatorGapWidth = getResources().getDimension(R.dimen.chapter_page_indicator_gap_width);
         int count = mChapterPageAdapter.getCount();
-        int width = (int)(pageWidth - hPadding - indicatorPadding * (count - 1)) / count;
+        int width = (int)(pageWidth - indicatorGapWidth * (count - 1)) / count;
         return width;
     }
 }

@@ -125,11 +125,11 @@ public class ChapterPageAdapter extends FragmentPagerAdapter {
     // The total number of words can display on a given page (with known width and height).
     private int totalWordsCanDisplayOnOnePage(List<String> words, int startIndex) {
         ChapterPageUtil pageUtil = new ChapterPageUtil(mAppContext);
-        int pageWidth = pageUtil.getPageWidth();
-        int pageHeight = pageUtil.getPageHeight();
+        int pageWidth = pageUtil.getChapterPageWidth();
+        int pageHeight = pageUtil.getChapterPageHeight();
         int remainingWidth = pageWidth;
-        int lineHeight = pageUtil.getLineHeight();
-        int remainingHeight = pageHeight - lineHeight*3;
+        int lineHeight = pageUtil.getChapterLineHeight();
+        int remainingHeight = pageHeight - lineHeight;
         
         int i = startIndex;
         for (; i<words.size(); i++) {

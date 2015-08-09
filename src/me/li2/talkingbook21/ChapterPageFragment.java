@@ -31,6 +31,7 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
     
     private TextView lastReadingWord;
     private OnWordClickListener mOnWordClickListener;
+    private ChapterPageUtil mChapterPageUtil;
     
     public void setOnWordClickListener(OnWordClickListener l) {
         mOnWordClickListener = l;
@@ -61,6 +62,7 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         mChapter = TalkingBookChapter.get(getActivity(), mJsonUri);
         mWordList = mChapter.getWordList(mFromIndex, mCount);
         mTimingList = mChapter.getTimingList(mFromIndex, mCount);
+        mChapterPageUtil = new ChapterPageUtil(getActivity());
     }
     
     @Override
@@ -69,18 +71,18 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         
         ChapterPageUtil pageUtil = new ChapterPageUtil(getActivity());
         LinearLayout pageLayout = (LinearLayout) view.findViewById(R.id.rootLayout);
-        LinearLayout lineLayout = new LinearLayout(getActivity());
-        lineLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 64));
-        pageLayout.addView(lineLayout);
         @SuppressWarnings("unused")
         int count = 1;
-        
-        int pageWidth = pageUtil.getPageWidth();
-        int pageHeight = pageUtil.getPageHeight();
-        int lineHeight = pageUtil.getLineHeight();
+        int pageWidth = pageUtil.getChapterPageWidth();
+        int pageHeight = pageUtil.getChapterPageHeight();
+        int lineHeight = pageUtil.getChapterLineHeight();
         int remainingWidth = pageWidth;
-        int remainingHeight = pageHeight - lineHeight*3;
+        int remainingHeight = pageHeight - lineHeight;
         
+        LinearLayout lineLayout = new LinearLayout(getActivity());
+        lineLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, lineHeight));
+        pageLayout.addView(lineLayout);
+
         for (int i = 0; i < mCount; i++) {
             // create a new TextView
             String word = mWordList.get(i);
@@ -90,7 +92,7 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
             if (wordWidth > remainingWidth) {
                 lineLayout = new LinearLayout(getActivity());
                 count++;
-                lineLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 64));
+                lineLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, lineHeight)); // in pixels
                 
                 if (remainingHeight <= lineHeight) {
                     break;
@@ -161,8 +163,8 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
     private TextView createTextView(String word, int timing) {
         TextView aword = new TextView(getActivity());
         aword.setText(word);
-        aword.setPadding(0, 0, ChapterPageUtil.DEFAULT_WORD_SPACE, 0);
-        aword.setTextSize(ChapterPageUtil.DEFAULT_FONT_SIZE);
+        aword.setTextSize(mChapterPageUtil.getChapterFontSize());
+        aword.setLayoutParams(new LayoutParams(mChapterPageUtil.getStringWidth(word), LayoutParams.MATCH_PARENT));
         aword.setTag(timing);
         aword.setOnClickListener(this);
         return aword;

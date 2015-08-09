@@ -6,7 +6,11 @@
     <dimen name="time_label_font">12sp</dimen>
     <dimen name="time_label_width">32dp</dimen>
     <dimen name="chapter_page_indicator_layout_height">24dp</dimen>
-    <dimen name="chapter_page_h_padding">8dp</dimen>
-    <dimen name="chapter_page_indicator_padding">2dp</dimen>
-
+    <dimen name="chapter_page_indicator_gap_width">2dp</dimen>
+    <dimen name="chapter_page_indicator_stroke_width">2dp</dimen>
+    <dimen name="chapter_page_padding">8dp</dimen>
+    <dimen name="chapter_word_space">8dp</dimen>
+    <dimen name="chapter_line_height">32dp</dimen>
+    <dimen name="chapter_word_font">9sp</dimen>
+    
 </resources>

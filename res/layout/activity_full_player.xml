@@ -8,18 +8,19 @@
         android:id="@+id/catcher_chapterViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingLeft="@dimen/chapter_page_padding"
+        android:paddingRight="@dimen/chapter_page_padding"
         android:layout_weight="1" />
     
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/chapter_page_indicator_layout_height"
         android:layout_weight="0"
-        android:paddingLeft="@dimen/chapter_page_h_padding"
-        android:paddingRight="@dimen/chapter_page_h_padding" >
+        android:paddingLeft="@dimen/chapter_page_padding"
+        android:paddingRight="@dimen/chapter_page_padding" >
         
 	    <com.viewpagerindicator.LinePageIndicator
 	        android:id="@+id/catcher_chapterPageIndicator"
-	        android:padding="@dimen/chapter_page_indicator_padding"
 	        android:layout_height="wrap_content"
 	        android:layout_width="match_parent"
 	        android:layout_gravity="top" />

@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -160,10 +161,18 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         return nearestTag;
     }
     
+    /*
+    Fix mixed units problem of method setTextSize(float size), the given size interpreted as "scaled pixel".
+    XML Attributes android:textSize available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size), in (inches), mm (millimeters).
+    My Honor3C return 18 when call getDimension(R.dimen.9sp), LG-G3 return 36. The unit is px!
+    So we should call setTextSize(TypedValue.COMPLEX_UNIT_PX, size).
+    http://stackoverflow.com/a/5032433/2722270
+    http://developer.android.com/reference/android/widget/TextView.html#setTextSize(int, float)
+    */
     private TextView createTextView(String word, int timing) {
         TextView aword = new TextView(getActivity());
         aword.setText(word);
-        aword.setTextSize(mChapterPageUtil.getChapterFontSize());
+        aword.setTextSize(TypedValue.COMPLEX_UNIT_PX, mChapterPageUtil.getChapterFontSize());
         aword.setLayoutParams(new LayoutParams(mChapterPageUtil.getStringWidth(word), LayoutParams.MATCH_PARENT));
         aword.setTag(timing);
         aword.setOnClickListener(this);

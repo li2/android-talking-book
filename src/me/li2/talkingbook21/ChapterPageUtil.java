@@ -31,7 +31,7 @@ public class ChapterPageUtil {
     public int getStringWidth(String content) {
         Rect bounds = new Rect();
         TextView textView = new TextView(mAppContext);
-        textView.setTextSize(mChapterFontSize);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mChapterFontSize);
         Paint textPaint = textView.getPaint();
         textPaint.getTextBounds(content, 0, content.length(), bounds);
         return bounds.width() + mChapterWordSapce;
@@ -40,7 +40,7 @@ public class ChapterPageUtil {
     public int getStringHeight(String content) {
         Rect bounds = new Rect();
         TextView textView = new TextView(mAppContext);
-        textView.setTextSize(mChapterFontSize);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mChapterFontSize);
         Paint textPaint = textView.getPaint();
         textPaint.getTextBounds(content, 0, content.length(), bounds);
         return bounds.height();

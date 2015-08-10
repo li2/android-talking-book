@@ -10,7 +10,7 @@
     <dimen name="chapter_page_indicator_stroke_width">2dp</dimen>
     <dimen name="chapter_page_padding">8dp</dimen>
     <dimen name="chapter_word_space">8dp</dimen>
-    <dimen name="chapter_line_height">32dp</dimen>
-    <dimen name="chapter_word_font">9sp</dimen>
+    <dimen name="chapter_line_height">30dp</dimen>
+    <dimen name="chapter_word_font">18sp</dimen>
     
 </resources>

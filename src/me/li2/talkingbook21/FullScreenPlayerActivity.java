@@ -101,12 +101,20 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     protected void onStart() {
         super.onStart();
         
-        mPlayerController = new AudioPlayerController();
-        mPlayerController.registerCallback(mPlayerControllerCallbacks);
-        mPlayerController.play(this, mAudioUri);
-        mPlayerController.setLooping(false);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume()");
+        if (mPlayerController == null) {
+            mPlayerController = new AudioPlayerController();
+            mPlayerController.registerCallback(mPlayerControllerCallbacks);
+            mPlayerController.play(this, mAudioUri);
+            mPlayerController.setLooping(true);
+        }
+    }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();

@@ -8,6 +8,9 @@ import java.util.concurrent.TimeUnit;
 import com.viewpagerindicator.LinePageIndicator;
 
 import android.app.ActionBar;
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -28,11 +31,13 @@ import me.li2.audioplayer.AudioPlayerController.PlaybackState;
 import me.li2.talkingbook21.ChapterPageAdapter.OnChapterPageWordClickListener;
 
 public class FullScreenPlayerActivity extends FragmentActivity {
-    
-    public final static String EXTRA_AUDIO_PATH = "me.li2.android.lrcbuilder.audio_path";
-    public final static String EXTRA_LRC_PATH = "me.li2.android.lrcbuilder.lrc_path";
     private final static String TAG = "FullScreenPlayerActivity";
+    
+    public final static String EXTRA_AUDIO_PATH = "me.li2.talkingbook21.FullScreenPlayerActivity.audio_path";
+    public final static String EXTRA_LRC_PATH = "me.li2.talkingbook21.FullScreenPlayerActivity.lrc_path";
     private final static int PROGRESS_UPDATE_INTERVAL = 200;
+    private final static String SHARED_PREFE_FILE = "me.li2.talkingbook21";
+    private final static String SHARED_PREFE_LAST_POSITION_KEY = "me.li2.talkingbook21.FullScreenPlayerActivity.last_position_key";
     
     private TextView mCurrentTimeLabel;
     private TextView mDurationLabel;
@@ -98,12 +103,6 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     }
     
     @Override
-    protected void onStart() {
-        super.onStart();
-        
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume()");
@@ -112,12 +111,18 @@ public class FullScreenPlayerActivity extends FragmentActivity {
             mPlayerController.registerCallback(mPlayerControllerCallbacks);
             mPlayerController.play(this, mAudioUri);
             mPlayerController.setLooping(true);
+            int lastPosition = getLastPosition();
+            Log.d(TAG, "last positioin " + lastPosition);
+            if (lastPosition > 0) {
+                mPlayerController.seekToPosition(lastPosition);
+            }
         }
     }
     
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        saveLastPosition();
         stopSeekbarUpdate();
         mExecutorService.shutdown();
         mPlayerController.stop();
@@ -309,4 +314,18 @@ public class FullScreenPlayerActivity extends FragmentActivity {
         int width = (int)(pageWidth - indicatorGapWidth * (count - 1)) / count;
         return width;
     }
+    
+    private void saveLastPosition() {
+        SharedPreferences p = getSharedPreferences(SHARED_PREFE_FILE, Activity.MODE_PRIVATE);
+        Editor editor = p.edit();
+        int position = mPlayerController.getCurrentPosition();
+        editor.putLong(mAudioUri.toString(), position);
+        editor.commit();
+    }
+    
+    private int getLastPosition() {
+        SharedPreferences p = getSharedPreferences(SHARED_PREFE_FILE, Activity.MODE_PRIVATE);
+        return (int)(p.getLong(mAudioUri.toString(), 0));
+    }
+    
 }

@@ -37,7 +37,6 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     public final static String EXTRA_LRC_PATH = "me.li2.talkingbook21.FullScreenPlayerActivity.lrc_path";
     private final static int PROGRESS_UPDATE_INTERVAL = 200;
     private final static String SHARED_PREFE_FILE = "me.li2.talkingbook21";
-    private final static String SHARED_PREFE_LAST_POSITION_KEY = "me.li2.talkingbook21.FullScreenPlayerActivity.last_position_key";
     
     private TextView mCurrentTimeLabel;
     private TextView mDurationLabel;
@@ -114,7 +113,7 @@ public class FullScreenPlayerActivity extends FragmentActivity {
             int lastPosition = getLastPosition();
             Log.d(TAG, "last positioin " + lastPosition);
             if (lastPosition > 0) {
-                mPlayerController.seekToPosition(lastPosition);
+                seekToPosition(lastPosition);
             }
         }
     }
@@ -221,7 +220,7 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     private OnChapterPageWordClickListener mOnPageAdapterWordClickListener = new OnChapterPageWordClickListener() {
         @Override
         public void onChapterPageWordClick(int msec) {
-            mPlayerController.seekToPosition(msec);
+            seekToPosition(msec);
         }
     };
     
@@ -234,7 +233,7 @@ public class FullScreenPlayerActivity extends FragmentActivity {
                 // in case for reading the beginning word twice!
                 isAudioPositionOutOfPage = false;
             } else {
-                mPlayerController.seekToPosition(mChapterPageAdapter.getPageTiming(position));
+                seekToPosition(mChapterPageAdapter.getPageTiming(position));
             }
         }
         
@@ -269,11 +268,11 @@ public class FullScreenPlayerActivity extends FragmentActivity {
             return true;
 
         case R.id.catcher_action_forward5:
-            mPlayerController.seekToPosition(mPlayerController.getCurrentPosition()+5*1000);
+            seekToPosition(mPlayerController.getCurrentPosition()+5*1000);
             return true;
             
         case R.id.catcher_action_replay5:
-            mPlayerController.seekToPosition(mPlayerController.getCurrentPosition()-5*1000);
+            seekToPosition(mPlayerController.getCurrentPosition()-5*1000);
             return true;
             
         default:
@@ -326,6 +325,13 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     private int getLastPosition() {
         SharedPreferences p = getSharedPreferences(SHARED_PREFE_FILE, Activity.MODE_PRIVATE);
         return (int)(p.getLong(mAudioUri.toString(), 0));
+    }
+    
+    private void seekToPosition(int position) {
+        if (mPlayerController.getPlaybackState() != PlaybackState.PLAYBACK_STATE_PLAYING) {
+            mPlayerController.play();
+        }
+        mPlayerController.seekToPosition(position);
     }
     
 }

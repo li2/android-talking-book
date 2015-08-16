@@ -11,6 +11,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 import me.li2.sdcard.FileOperateUtil;
+import me.li2.talkingbook21.R;
 
 public class TalkingBookChapter {
     private static final String TAG = "TalkingBookChapter";
@@ -23,9 +24,9 @@ public class TalkingBookChapter {
     private TalkingBookChapter(Context context, Uri timingJsonUri) {
         String timingJsonString = FileOperateUtil.loadExtFileToString(timingJsonUri);
         if (timingJsonString == null) {
-            // just for debug
-            timingJsonString = FileOperateUtil.loadAssetsFileToString(context, "c1_timing.json");
+            timingJsonString = FileOperateUtil.loadRawFileToString(context, R.raw.c1_timing); // just for demo
         }
+
         JSONObject jsonObj = null;
         JSONArray jsonArray = null;
         mWordArray = new ArrayList<String>();

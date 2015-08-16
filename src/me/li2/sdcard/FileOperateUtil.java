@@ -50,6 +50,22 @@ public class FileOperateUtil {
         return result;
     }
 	
+	public static String loadRawFileToString(Context context, int resId) {
+	    String result = null;
+        try {
+            InputStream is = context.getResources().openRawResource(resId);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            result = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return result;
+	}
+	
     public static ArrayList<String> loadExtFileToStringList(Uri fileUri) {
         ArrayList<String> result = new ArrayList<String>();
         BufferedReader reader = null;
@@ -97,5 +113,9 @@ public class FileOperateUtil {
             return null;
         }
         return result;
-    }	
+    }
+    
+    public static Uri getRawFileUri(Context context, int resId) {
+        return Uri.parse("android.resource://" + context.getApplicationContext().getPackageName() + "/" + resId);
+    }
 }

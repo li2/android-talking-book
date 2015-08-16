@@ -35,6 +35,7 @@ public class AudioPlayerController implements MediaPlayer.OnCompletionListener  
         mCallbacks = null;
     }
     
+    @SuppressWarnings("unused")
     private final static String TAG = "AudioPlayerController";
     private MediaPlayer mPlayer;
     private Callbacks mCallbacks;

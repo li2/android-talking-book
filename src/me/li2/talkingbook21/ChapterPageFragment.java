@@ -89,7 +89,14 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
             String word = mWordList.get(i);
             int timing = mTimingList.get(i);
             TextView wordTextView = createTextView(word, timing);
-            int wordWidth = pageUtil.getStringWidth(word);
+            int wordWidth;
+            if (word.equals("\n")) {
+                // occupy the whole line if is a new line break.
+                wordWidth = pageWidth;
+            } else {
+                wordWidth = pageUtil.getStringWidth(word);
+            }
+        
             if (wordWidth > remainingWidth) {
                 lineLayout = new LinearLayout(getActivity());
                 count++;
@@ -173,7 +180,13 @@ public class ChapterPageFragment extends Fragment implements OnClickListener {
         TextView aword = new TextView(getActivity());
         aword.setText(word);
         aword.setTextSize(TypedValue.COMPLEX_UNIT_PX, mChapterPageUtil.getChapterFontSize());
-        aword.setLayoutParams(new LayoutParams(mChapterPageUtil.getStringWidth(word), LayoutParams.MATCH_PARENT));
+        int width;
+        if (word.equals("\n")) {
+            width = LayoutParams.MATCH_PARENT;
+        } else {
+            width = mChapterPageUtil.getStringWidth(word);
+        }
+        aword.setLayoutParams(new LayoutParams(width, LayoutParams.MATCH_PARENT));
         aword.setTag(timing);
         aword.setOnClickListener(this);
         return aword;

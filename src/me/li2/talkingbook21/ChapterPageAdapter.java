@@ -134,7 +134,13 @@ public class ChapterPageAdapter extends FragmentPagerAdapter {
         int i = startIndex;
         for (; i<words.size(); i++) {
             String word = words.get(i);
-            int wordWidth = pageUtil.getStringWidth(word);
+            int wordWidth;
+            if (word.equals("\n")) {
+                // occupy the whole line if is a new line break.
+                wordWidth = pageWidth;
+            } else {
+                wordWidth = pageUtil.getStringWidth(word);
+            }
             if (wordWidth > remainingWidth) {
                 if (lineHeight >= remainingHeight) {
                     break;

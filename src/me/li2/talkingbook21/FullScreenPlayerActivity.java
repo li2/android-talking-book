@@ -28,6 +28,7 @@ import me.li2.audioplayer.AudioPlayerController.PlaybackState;
 import me.li2.talkingbook21.ChapterPageAdapter.OnChapterPageWordClickListener;
 import me.li2.talkingbook21.data.ChapterInfo;
 import me.li2.talkingbook21.data.ChapterInfoLab;
+import me.li2.talkingbook21.data.TalkingBookChapter;
 
 public class FullScreenPlayerActivity extends FragmentActivity {
     private final static String TAG = "FullScreenPlayerActivity";
@@ -117,7 +118,7 @@ public class FullScreenPlayerActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        
+        TalkingBookChapter.destroy();
         mChapterInfo.setLastPosition(mPlayerController.getCurrentPosition());
         stopSeekbarUpdate();
         mExecutorService.shutdown();

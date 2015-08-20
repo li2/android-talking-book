@@ -24,7 +24,7 @@ public class TalkingBookChapter {
     private TalkingBookChapter(Context context, Uri timingJsonUri) {
         String timingJsonString = FileOperateUtil.loadExtFileToString(timingJsonUri);
         if (timingJsonString == null) {
-            timingJsonString = FileOperateUtil.loadRawFileToString(context, R.raw.c1_timing); // just for demo
+            timingJsonString = FileOperateUtil.loadRawFileToString(context, R.raw.demo_timing); // just for demo
         }
 
         JSONObject jsonObj = null;
@@ -56,6 +56,10 @@ public class TalkingBookChapter {
             sChapter = new TalkingBookChapter(context, timingJsonUri);
         }
         return sChapter;
+    }
+    
+    public static void destroy() {
+        sChapter = null;
     }
     
     public List<String> getWordList(int fromIndex, int count) {

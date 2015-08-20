@@ -1,13 +1,17 @@
 package me.li2.talkingbook21.data;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.json.JSONException;
+
 import android.content.Context;
-import me.li2.sdcard.FileOperateUtil;
-import me.li2.talkingbook21.R;
 
 public class ChapterInfoLab {
 
+    private static final String FILENAME = "TalkingBook21_chapter_list.json";
+    private ChapterInfoJSONSerializer mSerializer;
+    
     // Singletons and Centralized data storage.
     private static ChapterInfoLab sChapterInfoLab;
     private ArrayList<ChapterInfo> mChapterInfos;
@@ -16,31 +20,14 @@ public class ChapterInfoLab {
     private ChapterInfoLab(Context appContext) {
         mAppContext = appContext;
         assert mAppContext != null;
-        mChapterInfos = new ArrayList<ChapterInfo>();
+        mSerializer = new ChapterInfoJSONSerializer(mAppContext, FILENAME);
         
-        ChapterInfo demoInfo = new ChapterInfo("Demo");
-        demoInfo.setAudioUri(FileOperateUtil.getRawFileUri(appContext, R.raw.c1_audio));
-        demoInfo.setTimingJsonUri(FileOperateUtil.getRawFileUri(appContext, R.raw.c1_timing));
-        mChapterInfos.add(demoInfo);
-        
-//        String sdcardPath = SdcardUtil.getExtSDCardPath();
-//        Uri audioUri;
-//        Uri timingJsonUri;
-//        if (sdcardPath != null) {
-//            String timingJsonFileName = "chapter1.json.out.json";
-//            String audioFileName = "chapter1.mp3";
-//            String folderPath = sdcardPath + "/" + "TalkingBook21/";
-//            String timingJsonFilePath = folderPath + timingJsonFileName;
-//            String audioFilePath = folderPath + audioFileName;
-//            File audioFile = new File(audioFilePath);
-//            if (audioFile.exists()) {
-//                audioUri = Uri.fromFile(audioFile);
-//            }
-//            File timingJsonFile = new File(timingJsonFilePath);
-//            if (timingJsonFile.exists()) {
-//                timingJsonUri = Uri.fromFile(timingJsonFile);
-//            }
-//        }
+        try {
+            mChapterInfos = mSerializer.loadChapterInfos();
+        } catch (Exception e) {
+            mChapterInfos = new ArrayList<ChapterInfo>();
+            e.printStackTrace();
+        }
     }
     
     // Setting up the singleton
@@ -67,5 +54,13 @@ public class ChapterInfoLab {
     
     public void addChapterInfo(ChapterInfo info) {
         mChapterInfos.add(info);
+    }
+    
+    public void saveChapterInfos() {
+        try {
+            mSerializer.saveInfos(mChapterInfos);
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -2,12 +2,31 @@
 <resources>
 
     <string name="app_name">TalkingBook21</string>
+    <string name="catcher_about">About</string>
     <string name="catcher_playPause">Paly Pause</string>
     <string name="catcher_forward5">forward 5s</string>
     <string name="catcher_replay5">replay 5s</string>
     <string name="catcher_play">Play</string>
     <string name="catcher_pause">Pause</string>
     <string name="catcher_stop">Stop</string>
-    <string name="catcher_description">Neil Armstrong stepping onto the moon</string>
-
+    <string name="catcher_network_unreachable">需要联网才可以看我~</string>
+    <string name="catcher_demo">Demo 翻我牌 秀给你看 :P ~</string>
+    <string name="catcher_load_extsd_tip">
+        ======== 一个提示 =========\n\n
+        TalkingBook21是一个英文有声读物App，尽可能地实现了每个文本单词和音频的同步（这也是它惟一的功能）：\n
+        \n
+        - 播放时通过高亮单词的方式提示当前读到的单词；\n
+        - 点击单词、翻页、快进5s、快退5s 可以从选中处播放音频。\n
+        \n
+        目前仅实现了《麦田的守望者 The Catcher in the Rye》的同步。音频总时长7个小时。点击此处下载音频和处理后的文本：http://pan.baidu.com/s/1bnyivnT \n
+        \n
+        你需要把它解压后放入手机的外置SD卡：\n
+        YourExtSDCard/TalkingBook21/\n
+        然后重新启动App（彻底杀掉！）\n
+        重启后的App会向你展示章节列表，点击即可播放。\n
+        \n
+        Enjoy it~\n
+        \n
+        li2- SH 2015-08-21
+        </string>
 </resources>

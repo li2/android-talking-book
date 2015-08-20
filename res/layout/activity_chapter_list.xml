@@ -1,9 +1,20 @@
-<!-- Create fragment container layout
-Note that, while the file consists solely of a container view for a single fragment,
-an activity’s layout can be more complex and define multiple container views as well as widgets of its own
--->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragmentContainer"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    />
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:id="@+id/catcher_listFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/catcher_loadExtSdTip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:linksClickable="true"
+        android:autoLink="web" />
+    
+</LinearLayout>

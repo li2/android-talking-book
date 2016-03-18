@@ -28,7 +28,6 @@ public class ChapterInfoJSONSerializer {
         mFilename = filename;
     }
 
-    // Loading Crimes from the filesystem
     public ArrayList<ChapterInfo> loadChapterInfos() throws IOException, JSONException {
         ArrayList<ChapterInfo> infos = new ArrayList<ChapterInfo>();
         BufferedReader reader = null;

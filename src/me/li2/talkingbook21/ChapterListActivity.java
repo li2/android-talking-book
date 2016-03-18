@@ -43,6 +43,7 @@ public class ChapterListActivity extends FragmentActivity {
         
         if (ChapterInfoLab.get(this).getChapterInfos().size() == 0) {
             if (!loadFileFromExtSD()) {
+                // 指定的音频文件夹不存在，则读取 /res/raw 中存储的用于演示的 demo 文件。
                 ChapterInfo demoInfo = new ChapterInfo(getResources().getString(R.string.catcher_demo));
                 demoInfo.setAudioUri(FileOperateUtil.getRawFileUri(this, R.raw.demo_audio));
                 demoInfo.setTimingJsonUri(FileOperateUtil.getRawFileUri(this, R.raw.demo_timing));
@@ -76,6 +77,7 @@ public class ChapterListActivity extends FragmentActivity {
         }
     }
     
+    // 从 Sdcard 指定文件夹中遍历音频文件，并把路径写入指定的 JSON file.
     private boolean loadFileFromExtSD() {
         String sdcardPath = SdcardUtil.getExtSDCardPath();
         if (sdcardPath != null) {
@@ -85,6 +87,7 @@ public class ChapterListActivity extends FragmentActivity {
             String folderPath = sdcardPath + "/" + PATH_CATCHER_IN_RYE;
             File folderFile = new File(folderPath);
             if (!folderFile.exists()) {
+                // 指定的音频文件夹不存在，返回。
                 return false;
             }
             
@@ -110,12 +113,14 @@ public class ChapterListActivity extends FragmentActivity {
                         ChapterInfo info = new ChapterInfo(audioFileName);
                         info.setAudioUri(Uri.fromFile(audioFile));
                         info.setTimingJsonUri(Uri.fromFile(timingJsonFile));
+                        // 添加
                         lab.addChapterInfo(info);
                     }
                 }
             }
             
             if (lab.getChapterInfos().size() > 0) {
+                // 保存
                 lab.saveChapterInfos();
                 return true;
             }
